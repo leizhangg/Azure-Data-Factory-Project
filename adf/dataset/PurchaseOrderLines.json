@@ -1,0 +1,85 @@
+{
+	"name": "PurchaseOrderLines",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "odsLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "PurchaseOrderLineID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "PurchaseOrderID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "StockItemID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "OrderedOuters",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Description",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ReceivedOuters",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "PackageTypeID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ExpectedUnitPricePerOuter",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "LastReceiptDate",
+				"type": "date"
+			},
+			{
+				"name": "IsOrderLineFinalized",
+				"type": "bit"
+			},
+			{
+				"name": "LastEditedBy",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "LastEditedWhen",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "ingest_time",
+				"type": "nvarchar"
+			},
+			{
+				"name": "surrogate_key_pol",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "Purchasing",
+			"table": "PurchaseOrderLines"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

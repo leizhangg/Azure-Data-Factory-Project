@@ -1,0 +1,16 @@
+{
+	"name": "oltpDataset",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sourceDataLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "01-copyDataFromOLTP"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
