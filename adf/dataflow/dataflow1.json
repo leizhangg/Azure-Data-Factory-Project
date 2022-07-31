@@ -17,12 +17,81 @@
 						"type": "DatasetReference"
 					},
 					"name": "PurchaseOrders"
+				},
+				{
+					"dataset": {
+						"referenceName": "Suppliers",
+						"type": "DatasetReference"
+					},
+					"name": "suppliers"
+				},
+				{
+					"dataset": {
+						"referenceName": "SupplierTransactions",
+						"type": "DatasetReference"
+					},
+					"name": "supplierTransactions"
+				},
+				{
+					"dataset": {
+						"referenceName": "SupplierCategories",
+						"type": "DatasetReference"
+					},
+					"name": "SupplierCategories"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "PurchaseOrders",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "PurchaseOrderLines",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
+				},
+				{
+					"dataset": {
+						"referenceName": "Suppliers",
+						"type": "DatasetReference"
+					},
+					"name": "sink3"
+				},
+				{
+					"dataset": {
+						"referenceName": "SupplierTransactions",
+						"type": "DatasetReference"
+					},
+					"name": "sink4"
+				},
+				{
+					"dataset": {
+						"referenceName": "SupplierCategories",
+						"type": "DatasetReference"
+					},
+					"name": "sink5"
+				}
+			],
 			"transformations": [
 				{
-					"name": "orderlineJoinOrder"
+					"name": "addSurrogateKey1"
+				},
+				{
+					"name": "addSurrogateKey2"
+				},
+				{
+					"name": "addSurrogateKey3"
+				},
+				{
+					"name": "addSurrogateKey4"
+				},
+				{
+					"name": "addSurrogateKey5"
 				}
 			],
 			"scriptLines": [
@@ -62,11 +131,196 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> PurchaseOrders",
-				"PurchaseOrderLines, PurchaseOrders join(PurchaseOrderLines@PurchaseOrderID == PurchaseOrders@PurchaseOrderID,",
-				"     joinType:'left',",
-				"     matchType:'exact',",
-				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> orderlineJoinOrder"
+				"source(output(",
+				"          SupplierID as string,",
+				"          SupplierName as string,",
+				"          SupplierCategoryID as string,",
+				"          PrimaryContactPersonID as string,",
+				"          AlternateContactPersonID as string,",
+				"          DeliveryMethodID as string,",
+				"          DeliveryCityID as string,",
+				"          PostalCityID as string,",
+				"          SupplierReference as string,",
+				"          BankAccountName as string,",
+				"          BankAccountBranch as string,",
+				"          BankAccountCode as string,",
+				"          BankAccountNumber as string,",
+				"          BankInternationalCode as string,",
+				"          PaymentDays as string,",
+				"          InternalComments as string,",
+				"          PhoneNumber as string,",
+				"          FaxNumber as string,",
+				"          WebsiteURL as string,",
+				"          DeliveryAddressLine1 as string,",
+				"          DeliveryAddressLine2 as string,",
+				"          DeliveryPostalCode as string,",
+				"          DeliveryLocation as string,",
+				"          PostalAddressLine1 as string,",
+				"          PostalAddressLine2 as string,",
+				"          PostalPostalCode as string,",
+				"          LastEditedBy as string,",
+				"          ValidFrom as string,",
+				"          ValidTo as string,",
+				"          ingest_time as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> suppliers",
+				"source(output(",
+				"          SupplierTransactionID as string,",
+				"          SupplierID as string,",
+				"          TransactionTypeID as string,",
+				"          PurchaseOrderID as string,",
+				"          PaymentMethodID as string,",
+				"          SupplierInvoiceNumber as string,",
+				"          TransactionDate as string,",
+				"          AmountExcludingTax as string,",
+				"          TaxAmount as string,",
+				"          TransactionAmount as string,",
+				"          OutstandingBalance as string,",
+				"          FinalizationDate as string,",
+				"          IsFinalized as string,",
+				"          LastEditedBy as string,",
+				"          LastEditedWhen as string,",
+				"          ingest_time as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> supplierTransactions",
+				"source(output(",
+				"          SupplierCategoryID as string,",
+				"          SupplierCategoryName as string,",
+				"          LastEditedBy as string,",
+				"          ValidFrom as string,",
+				"          ValidTo as string,",
+				"          ingest_time as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SupplierCategories",
+				"PurchaseOrderLines keyGenerate(output(surrogateKeyPOL as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> addSurrogateKey1",
+				"PurchaseOrders keyGenerate(output(SurrogateKeyPO as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> addSurrogateKey2",
+				"suppliers keyGenerate(output(SurrogateKeyS as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> addSurrogateKey3",
+				"supplierTransactions keyGenerate(output(SurrogateKeyST as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> addSurrogateKey4",
+				"SupplierCategories keyGenerate(output(SurrogateKeySC as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> addSurrogateKey5",
+				"addSurrogateKey2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          PurchaseOrderID as string,",
+				"          SupplierID as string,",
+				"          OrderDate as string,",
+				"          DeliveryMethodID as string,",
+				"          ContactPersonID as string,",
+				"          ExpectedDeliveryDate as string,",
+				"          SupplierReference as string,",
+				"          IsOrderFinalized as string,",
+				"          Comments as string,",
+				"          InternalComments as string,",
+				"          LastEditedBy as string,",
+				"          LastEditedWhen as string,",
+				"          ingest_time as string",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1",
+				"addSurrogateKey1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          PurchaseOrderLineID as string,",
+				"          PurchaseOrderID as string,",
+				"          StockItemID as string,",
+				"          OrderedOuters as string,",
+				"          Description as string,",
+				"          ReceivedOuters as string,",
+				"          PackageTypeID as string,",
+				"          ExpectedUnitPricePerOuter as string,",
+				"          LastReceiptDate as string,",
+				"          IsOrderLineFinalized as string,",
+				"          LastEditedBy as string,",
+				"          LastEditedWhen as string,",
+				"          ingest_time as string",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink2",
+				"addSurrogateKey3 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          SupplierID as string,",
+				"          SupplierName as string,",
+				"          SupplierCategoryID as string,",
+				"          PrimaryContactPersonID as string,",
+				"          AlternateContactPersonID as string,",
+				"          DeliveryMethodID as string,",
+				"          DeliveryCityID as string,",
+				"          PostalCityID as string,",
+				"          SupplierReference as string,",
+				"          BankAccountName as string,",
+				"          BankAccountBranch as string,",
+				"          BankAccountCode as string,",
+				"          BankAccountNumber as string,",
+				"          BankInternationalCode as string,",
+				"          PaymentDays as string,",
+				"          InternalComments as string,",
+				"          PhoneNumber as string,",
+				"          FaxNumber as string,",
+				"          WebsiteURL as string,",
+				"          DeliveryAddressLine1 as string,",
+				"          DeliveryAddressLine2 as string,",
+				"          DeliveryPostalCode as string,",
+				"          DeliveryLocation as string,",
+				"          PostalAddressLine1 as string,",
+				"          PostalAddressLine2 as string,",
+				"          PostalPostalCode as string,",
+				"          LastEditedBy as string,",
+				"          ValidFrom as string,",
+				"          ValidTo as string,",
+				"          ingest_time as string",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink3",
+				"addSurrogateKey4 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          SupplierTransactionID as string,",
+				"          SupplierID as string,",
+				"          TransactionTypeID as string,",
+				"          PurchaseOrderID as string,",
+				"          PaymentMethodID as string,",
+				"          SupplierInvoiceNumber as string,",
+				"          TransactionDate as string,",
+				"          AmountExcludingTax as string,",
+				"          TaxAmount as string,",
+				"          TransactionAmount as string,",
+				"          OutstandingBalance as string,",
+				"          FinalizationDate as string,",
+				"          IsFinalized as string,",
+				"          LastEditedBy as string,",
+				"          LastEditedWhen as string,",
+				"          ingest_time as string",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink4",
+				"addSurrogateKey5 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          SupplierCategoryID as string,",
+				"          SupplierCategoryName as string,",
+				"          LastEditedBy as string,",
+				"          ValidFrom as string,",
+				"          ValidTo as string,",
+				"          ingest_time as string",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink5"
 			]
 		}
 	}
