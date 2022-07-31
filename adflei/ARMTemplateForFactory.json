@@ -25,7 +25,147 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/pipeline-copy-data')]",
+			"name": "[concat(parameters('factoryName'), '/pipeline-copy-data_blob')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "GetTableLists",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "SELECT * FROM Purchasing.getTableName",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "oltpDataset",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "GetTableLists",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('GetTableLists').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Copy data1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"additionalColumns": [
+												{
+													"name": "ingest_time",
+													"value": {
+														"value": "@utcnow()",
+														"type": "Expression"
+													}
+												}
+											],
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "copySource",
+											"type": "DatasetReference",
+											"parameters": {
+												"schema": {
+													"value": "@item().Table_schema",
+													"type": "Expression"
+												},
+												"table": {
+													"value": "@item().Table_name",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "DelimitedText1",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-07-25T20:57:56Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/oltpDataset')]",
+				"[concat(variables('factoryId'), '/datasets/copySource')]",
+				"[concat(variables('factoryId'), '/datasets/DelimitedText1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline-copy-data_server')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -170,17 +310,17 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pipeline-copy-data_blob')]",
+			"name": "[concat(parameters('factoryName'), '/pipeline_df_addKey')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "GetTableLists",
-						"type": "Lookup",
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
 						"dependsOn": [],
 						"policy": {
-							"timeout": "7.00:00:00",
+							"timeout": "1.00:00:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
@@ -188,111 +328,29 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderQuery": "SELECT * FROM Purchasing.getTableName",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "oltpDataset",
-								"type": "DatasetReference",
-								"parameters": {}
-							},
-							"firstRowOnly": false
-						}
-					},
-					{
-						"name": "ForEach1",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "GetTableLists",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('GetTableLists').output.value",
-								"type": "Expression"
-							},
-							"activities": [
-								{
-									"name": "Copy data1",
-									"type": "Copy",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "AzureSqlSource",
-											"additionalColumns": [
-												{
-													"name": "ingest_time",
-													"value": {
-														"value": "@utcnow()",
-														"type": "Expression"
-													}
-												}
-											],
-											"queryTimeout": "02:00:00",
-											"partitionOption": "None"
-										},
-										"sink": {
-											"type": "DelimitedTextSink",
-											"storeSettings": {
-												"type": "AzureBlobStorageWriteSettings"
-											},
-											"formatSettings": {
-												"type": "DelimitedTextWriteSettings",
-												"quoteAllText": true,
-												"fileExtension": ".txt"
-											}
-										},
-										"enableStaging": false,
-										"translator": {
-											"type": "TabularTranslator",
-											"typeConversion": true,
-											"typeConversionSettings": {
-												"allowDataTruncation": true,
-												"treatBooleanAsNumber": false
-											}
-										}
-									},
-									"inputs": [
-										{
-											"referenceName": "copySource",
-											"type": "DatasetReference",
-											"parameters": {
-												"schema": {
-													"value": "@item().Table_schema",
-													"type": "Expression"
-												},
-												"table": {
-													"value": "@item().Table_name",
-													"type": "Expression"
-												}
-											}
-										}
-									],
-									"outputs": [
-										{
-											"referenceName": "DelimitedText1",
-											"type": "DatasetReference",
-											"parameters": {}
-										}
-									]
+							"dataflow": {
+								"referenceName": "dataflow_addSK",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"PurchaseOrderLines": {},
+									"PurchaseOrders": {},
+									"suppliers": {},
+									"supplierTransactions": {},
+									"SupplierCategories": {},
+									"sink1": {},
+									"sink2": {},
+									"sink3": {},
+									"sink4": {},
+									"sink5": {}
 								}
-							]
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
 						}
 					}
 				],
@@ -300,13 +358,10 @@
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
 				},
-				"annotations": [],
-				"lastPublishTime": "2022-07-25T20:57:56Z"
+				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/oltpDataset')]",
-				"[concat(variables('factoryId'), '/datasets/copySource')]",
-				"[concat(variables('factoryId'), '/datasets/DelimitedText1')]"
+				"[concat(variables('factoryId'), '/dataflows/dataflow_addSK')]"
 			]
 		},
 		{
@@ -388,6 +443,618 @@
 						"type": "String"
 					}
 				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BlobStorageLinkedService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PurchaseOrderLines')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BlobStorageLinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "02-integration"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Purchasing.PurchaseOrderLines.txt",
+						"folderPath": "ODS",
+						"container": "container1"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "PurchaseOrderLineID",
+						"type": "String"
+					},
+					{
+						"name": "PurchaseOrderID",
+						"type": "String"
+					},
+					{
+						"name": "StockItemID",
+						"type": "String"
+					},
+					{
+						"name": "OrderedOuters",
+						"type": "String"
+					},
+					{
+						"name": "Description",
+						"type": "String"
+					},
+					{
+						"name": "ReceivedOuters",
+						"type": "String"
+					},
+					{
+						"name": "PackageTypeID",
+						"type": "String"
+					},
+					{
+						"name": "ExpectedUnitPricePerOuter",
+						"type": "String"
+					},
+					{
+						"name": "LastReceiptDate",
+						"type": "String"
+					},
+					{
+						"name": "IsOrderLineFinalized",
+						"type": "String"
+					},
+					{
+						"name": "LastEditedBy",
+						"type": "String"
+					},
+					{
+						"name": "LastEditedWhen",
+						"type": "String"
+					},
+					{
+						"name": "ingest_time",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BlobStorageLinkedService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PurchaseOrderLinesKey')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BlobStorageLinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "ODS",
+						"container": "container1"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BlobStorageLinkedService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PurchaseOrders')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BlobStorageLinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "02-integration"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Purchasing.PurchaseOrders.txt",
+						"folderPath": "ODS",
+						"container": "container1"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "PurchaseOrderID",
+						"type": "String"
+					},
+					{
+						"name": "SupplierID",
+						"type": "String"
+					},
+					{
+						"name": "OrderDate",
+						"type": "String"
+					},
+					{
+						"name": "DeliveryMethodID",
+						"type": "String"
+					},
+					{
+						"name": "ContactPersonID",
+						"type": "String"
+					},
+					{
+						"name": "ExpectedDeliveryDate",
+						"type": "String"
+					},
+					{
+						"name": "SupplierReference",
+						"type": "String"
+					},
+					{
+						"name": "IsOrderFinalized",
+						"type": "String"
+					},
+					{
+						"name": "Comments",
+						"type": "String"
+					},
+					{
+						"name": "InternalComments",
+						"type": "String"
+					},
+					{
+						"name": "LastEditedBy",
+						"type": "String"
+					},
+					{
+						"name": "LastEditedWhen",
+						"type": "String"
+					},
+					{
+						"name": "ingest_time",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BlobStorageLinkedService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PurchaseOrdersKey')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BlobStorageLinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "ODS",
+						"container": "container1"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BlobStorageLinkedService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SupplierCategories')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BlobStorageLinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "02-integration"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Purchasing.SupplierCategories.txt",
+						"folderPath": "ODS",
+						"container": "container1"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "SupplierCategoryID",
+						"type": "String"
+					},
+					{
+						"name": "SupplierCategoryName",
+						"type": "String"
+					},
+					{
+						"name": "LastEditedBy",
+						"type": "String"
+					},
+					{
+						"name": "ValidFrom",
+						"type": "String"
+					},
+					{
+						"name": "ValidTo",
+						"type": "String"
+					},
+					{
+						"name": "ingest_time",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BlobStorageLinkedService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SupplierCategoriesKey')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BlobStorageLinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "ODS",
+						"container": "container1"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BlobStorageLinkedService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SupplierTransactions')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BlobStorageLinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "02-integration"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Purchasing.SupplierTransactions.txt",
+						"folderPath": "ODS",
+						"container": "container1"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "SupplierTransactionID",
+						"type": "String"
+					},
+					{
+						"name": "SupplierID",
+						"type": "String"
+					},
+					{
+						"name": "TransactionTypeID",
+						"type": "String"
+					},
+					{
+						"name": "PurchaseOrderID",
+						"type": "String"
+					},
+					{
+						"name": "PaymentMethodID",
+						"type": "String"
+					},
+					{
+						"name": "SupplierInvoiceNumber",
+						"type": "String"
+					},
+					{
+						"name": "TransactionDate",
+						"type": "String"
+					},
+					{
+						"name": "AmountExcludingTax",
+						"type": "String"
+					},
+					{
+						"name": "TaxAmount",
+						"type": "String"
+					},
+					{
+						"name": "TransactionAmount",
+						"type": "String"
+					},
+					{
+						"name": "OutstandingBalance",
+						"type": "String"
+					},
+					{
+						"name": "FinalizationDate",
+						"type": "String"
+					},
+					{
+						"name": "IsFinalized",
+						"type": "String"
+					},
+					{
+						"name": "LastEditedBy",
+						"type": "String"
+					},
+					{
+						"name": "LastEditedWhen",
+						"type": "String"
+					},
+					{
+						"name": "ingest_time",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BlobStorageLinkedService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SupplierTransactionsKey')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BlobStorageLinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "ODS",
+						"container": "container1"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BlobStorageLinkedService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Suppliers')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BlobStorageLinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "02-integration"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Purchasing.Suppliers.txt",
+						"folderPath": "ODS",
+						"container": "container1"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "SupplierID",
+						"type": "String"
+					},
+					{
+						"name": "SupplierName",
+						"type": "String"
+					},
+					{
+						"name": "SupplierCategoryID",
+						"type": "String"
+					},
+					{
+						"name": "PrimaryContactPersonID",
+						"type": "String"
+					},
+					{
+						"name": "AlternateContactPersonID",
+						"type": "String"
+					},
+					{
+						"name": "DeliveryMethodID",
+						"type": "String"
+					},
+					{
+						"name": "DeliveryCityID",
+						"type": "String"
+					},
+					{
+						"name": "PostalCityID",
+						"type": "String"
+					},
+					{
+						"name": "SupplierReference",
+						"type": "String"
+					},
+					{
+						"name": "BankAccountName",
+						"type": "String"
+					},
+					{
+						"name": "BankAccountBranch",
+						"type": "String"
+					},
+					{
+						"name": "BankAccountCode",
+						"type": "String"
+					},
+					{
+						"name": "BankAccountNumber",
+						"type": "String"
+					},
+					{
+						"name": "BankInternationalCode",
+						"type": "String"
+					},
+					{
+						"name": "PaymentDays",
+						"type": "String"
+					},
+					{
+						"name": "InternalComments",
+						"type": "String"
+					},
+					{
+						"name": "PhoneNumber",
+						"type": "String"
+					},
+					{
+						"name": "FaxNumber",
+						"type": "String"
+					},
+					{
+						"name": "WebsiteURL",
+						"type": "String"
+					},
+					{
+						"name": "DeliveryAddressLine1",
+						"type": "String"
+					},
+					{
+						"name": "DeliveryAddressLine2",
+						"type": "String"
+					},
+					{
+						"name": "DeliveryPostalCode",
+						"type": "String"
+					},
+					{
+						"name": "DeliveryLocation",
+						"type": "String"
+					},
+					{
+						"name": "PostalAddressLine1",
+						"type": "String"
+					},
+					{
+						"name": "PostalAddressLine2",
+						"type": "String"
+					},
+					{
+						"name": "PostalPostalCode",
+						"type": "String"
+					},
+					{
+						"name": "LastEditedBy",
+						"type": "String"
+					},
+					{
+						"name": "ValidFrom",
+						"type": "String"
+					},
+					{
+						"name": "ValidTo",
+						"type": "String"
+					},
+					{
+						"name": "ingest_time",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BlobStorageLinkedService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SuppliersKey')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BlobStorageLinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "ODS",
+						"container": "container1"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/BlobStorageLinkedService')]"
@@ -578,35 +1245,35 @@
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "PurchaseOrders",
+								"referenceName": "PurchaseOrdersKey",
 								"type": "DatasetReference"
 							},
 							"name": "sink1"
 						},
 						{
 							"dataset": {
-								"referenceName": "PurchaseOrderLines",
+								"referenceName": "PurchaseOrderLinesKey",
 								"type": "DatasetReference"
 							},
 							"name": "sink2"
 						},
 						{
 							"dataset": {
-								"referenceName": "Suppliers",
+								"referenceName": "SuppliersKey",
 								"type": "DatasetReference"
 							},
 							"name": "sink3"
 						},
 						{
 							"dataset": {
-								"referenceName": "SupplierTransactions",
+								"referenceName": "SupplierTransactionsKey",
 								"type": "DatasetReference"
 							},
 							"name": "sink4"
 						},
 						{
 							"dataset": {
-								"referenceName": "SupplierCategories",
+								"referenceName": "SupplierCategoriesKey",
 								"type": "DatasetReference"
 							},
 							"name": "sink5"
@@ -750,110 +1417,22 @@
 						"     stepValue: 1L) ~> addSurrogateKey5",
 						"addSurrogateKey2 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     input(",
-						"          PurchaseOrderID as string,",
-						"          SupplierID as string,",
-						"          OrderDate as string,",
-						"          DeliveryMethodID as string,",
-						"          ContactPersonID as string,",
-						"          ExpectedDeliveryDate as string,",
-						"          SupplierReference as string,",
-						"          IsOrderFinalized as string,",
-						"          Comments as string,",
-						"          InternalComments as string,",
-						"          LastEditedBy as string,",
-						"          LastEditedWhen as string,",
-						"          ingest_time as string",
-						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> sink1",
 						"addSurrogateKey1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     input(",
-						"          PurchaseOrderLineID as string,",
-						"          PurchaseOrderID as string,",
-						"          StockItemID as string,",
-						"          OrderedOuters as string,",
-						"          Description as string,",
-						"          ReceivedOuters as string,",
-						"          PackageTypeID as string,",
-						"          ExpectedUnitPricePerOuter as string,",
-						"          LastReceiptDate as string,",
-						"          IsOrderLineFinalized as string,",
-						"          LastEditedBy as string,",
-						"          LastEditedWhen as string,",
-						"          ingest_time as string",
-						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> sink2",
 						"addSurrogateKey3 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     input(",
-						"          SupplierID as string,",
-						"          SupplierName as string,",
-						"          SupplierCategoryID as string,",
-						"          PrimaryContactPersonID as string,",
-						"          AlternateContactPersonID as string,",
-						"          DeliveryMethodID as string,",
-						"          DeliveryCityID as string,",
-						"          PostalCityID as string,",
-						"          SupplierReference as string,",
-						"          BankAccountName as string,",
-						"          BankAccountBranch as string,",
-						"          BankAccountCode as string,",
-						"          BankAccountNumber as string,",
-						"          BankInternationalCode as string,",
-						"          PaymentDays as string,",
-						"          InternalComments as string,",
-						"          PhoneNumber as string,",
-						"          FaxNumber as string,",
-						"          WebsiteURL as string,",
-						"          DeliveryAddressLine1 as string,",
-						"          DeliveryAddressLine2 as string,",
-						"          DeliveryPostalCode as string,",
-						"          DeliveryLocation as string,",
-						"          PostalAddressLine1 as string,",
-						"          PostalAddressLine2 as string,",
-						"          PostalPostalCode as string,",
-						"          LastEditedBy as string,",
-						"          ValidFrom as string,",
-						"          ValidTo as string,",
-						"          ingest_time as string",
-						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> sink3",
 						"addSurrogateKey4 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     input(",
-						"          SupplierTransactionID as string,",
-						"          SupplierID as string,",
-						"          TransactionTypeID as string,",
-						"          PurchaseOrderID as string,",
-						"          PaymentMethodID as string,",
-						"          SupplierInvoiceNumber as string,",
-						"          TransactionDate as string,",
-						"          AmountExcludingTax as string,",
-						"          TaxAmount as string,",
-						"          TransactionAmount as string,",
-						"          OutstandingBalance as string,",
-						"          FinalizationDate as string,",
-						"          IsFinalized as string,",
-						"          LastEditedBy as string,",
-						"          LastEditedWhen as string,",
-						"          ingest_time as string",
-						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> sink4",
 						"addSurrogateKey5 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     input(",
-						"          SupplierCategoryID as string,",
-						"          SupplierCategoryName as string,",
-						"          LastEditedBy as string,",
-						"          ValidFrom as string,",
-						"          ValidTo as string,",
-						"          ingest_time as string",
-						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> sink5"
 					]
@@ -864,539 +1443,12 @@
 				"[concat(variables('factoryId'), '/datasets/PurchaseOrders')]",
 				"[concat(variables('factoryId'), '/datasets/Suppliers')]",
 				"[concat(variables('factoryId'), '/datasets/SupplierTransactions')]",
-				"[concat(variables('factoryId'), '/datasets/SupplierCategories')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/PurchaseOrderLines')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "BlobStorageLinkedService",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "02-integration"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "Purchasing.PurchaseOrderLines.txt",
-						"folderPath": "ODS",
-						"container": "container1"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "PurchaseOrderLineID",
-						"type": "String"
-					},
-					{
-						"name": "PurchaseOrderID",
-						"type": "String"
-					},
-					{
-						"name": "StockItemID",
-						"type": "String"
-					},
-					{
-						"name": "OrderedOuters",
-						"type": "String"
-					},
-					{
-						"name": "Description",
-						"type": "String"
-					},
-					{
-						"name": "ReceivedOuters",
-						"type": "String"
-					},
-					{
-						"name": "PackageTypeID",
-						"type": "String"
-					},
-					{
-						"name": "ExpectedUnitPricePerOuter",
-						"type": "String"
-					},
-					{
-						"name": "LastReceiptDate",
-						"type": "String"
-					},
-					{
-						"name": "IsOrderLineFinalized",
-						"type": "String"
-					},
-					{
-						"name": "LastEditedBy",
-						"type": "String"
-					},
-					{
-						"name": "LastEditedWhen",
-						"type": "String"
-					},
-					{
-						"name": "ingest_time",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/BlobStorageLinkedService')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/PurchaseOrders')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "BlobStorageLinkedService",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "02-integration"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "Purchasing.PurchaseOrders.txt",
-						"folderPath": "ODS",
-						"container": "container1"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "PurchaseOrderID",
-						"type": "String"
-					},
-					{
-						"name": "SupplierID",
-						"type": "String"
-					},
-					{
-						"name": "OrderDate",
-						"type": "String"
-					},
-					{
-						"name": "DeliveryMethodID",
-						"type": "String"
-					},
-					{
-						"name": "ContactPersonID",
-						"type": "String"
-					},
-					{
-						"name": "ExpectedDeliveryDate",
-						"type": "String"
-					},
-					{
-						"name": "SupplierReference",
-						"type": "String"
-					},
-					{
-						"name": "IsOrderFinalized",
-						"type": "String"
-					},
-					{
-						"name": "Comments",
-						"type": "String"
-					},
-					{
-						"name": "InternalComments",
-						"type": "String"
-					},
-					{
-						"name": "LastEditedBy",
-						"type": "String"
-					},
-					{
-						"name": "LastEditedWhen",
-						"type": "String"
-					},
-					{
-						"name": "ingest_time",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/BlobStorageLinkedService')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Suppliers')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "BlobStorageLinkedService",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "02-integration"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "Purchasing.Suppliers.txt",
-						"folderPath": "ODS",
-						"container": "container1"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "SupplierID",
-						"type": "String"
-					},
-					{
-						"name": "SupplierName",
-						"type": "String"
-					},
-					{
-						"name": "SupplierCategoryID",
-						"type": "String"
-					},
-					{
-						"name": "PrimaryContactPersonID",
-						"type": "String"
-					},
-					{
-						"name": "AlternateContactPersonID",
-						"type": "String"
-					},
-					{
-						"name": "DeliveryMethodID",
-						"type": "String"
-					},
-					{
-						"name": "DeliveryCityID",
-						"type": "String"
-					},
-					{
-						"name": "PostalCityID",
-						"type": "String"
-					},
-					{
-						"name": "SupplierReference",
-						"type": "String"
-					},
-					{
-						"name": "BankAccountName",
-						"type": "String"
-					},
-					{
-						"name": "BankAccountBranch",
-						"type": "String"
-					},
-					{
-						"name": "BankAccountCode",
-						"type": "String"
-					},
-					{
-						"name": "BankAccountNumber",
-						"type": "String"
-					},
-					{
-						"name": "BankInternationalCode",
-						"type": "String"
-					},
-					{
-						"name": "PaymentDays",
-						"type": "String"
-					},
-					{
-						"name": "InternalComments",
-						"type": "String"
-					},
-					{
-						"name": "PhoneNumber",
-						"type": "String"
-					},
-					{
-						"name": "FaxNumber",
-						"type": "String"
-					},
-					{
-						"name": "WebsiteURL",
-						"type": "String"
-					},
-					{
-						"name": "DeliveryAddressLine1",
-						"type": "String"
-					},
-					{
-						"name": "DeliveryAddressLine2",
-						"type": "String"
-					},
-					{
-						"name": "DeliveryPostalCode",
-						"type": "String"
-					},
-					{
-						"name": "DeliveryLocation",
-						"type": "String"
-					},
-					{
-						"name": "PostalAddressLine1",
-						"type": "String"
-					},
-					{
-						"name": "PostalAddressLine2",
-						"type": "String"
-					},
-					{
-						"name": "PostalPostalCode",
-						"type": "String"
-					},
-					{
-						"name": "LastEditedBy",
-						"type": "String"
-					},
-					{
-						"name": "ValidFrom",
-						"type": "String"
-					},
-					{
-						"name": "ValidTo",
-						"type": "String"
-					},
-					{
-						"name": "ingest_time",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/BlobStorageLinkedService')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SupplierCategories')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "BlobStorageLinkedService",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "02-integration"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "Purchasing.SupplierCategories.txt",
-						"folderPath": "ODS",
-						"container": "container1"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "SupplierCategoryID",
-						"type": "String"
-					},
-					{
-						"name": "SupplierCategoryName",
-						"type": "String"
-					},
-					{
-						"name": "LastEditedBy",
-						"type": "String"
-					},
-					{
-						"name": "ValidFrom",
-						"type": "String"
-					},
-					{
-						"name": "ValidTo",
-						"type": "String"
-					},
-					{
-						"name": "ingest_time",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/BlobStorageLinkedService')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SupplierTransactions')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "BlobStorageLinkedService",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "02-integration"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "Purchasing.SupplierTransactions.txt",
-						"folderPath": "ODS",
-						"container": "container1"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "SupplierTransactionID",
-						"type": "String"
-					},
-					{
-						"name": "SupplierID",
-						"type": "String"
-					},
-					{
-						"name": "TransactionTypeID",
-						"type": "String"
-					},
-					{
-						"name": "PurchaseOrderID",
-						"type": "String"
-					},
-					{
-						"name": "PaymentMethodID",
-						"type": "String"
-					},
-					{
-						"name": "SupplierInvoiceNumber",
-						"type": "String"
-					},
-					{
-						"name": "TransactionDate",
-						"type": "String"
-					},
-					{
-						"name": "AmountExcludingTax",
-						"type": "String"
-					},
-					{
-						"name": "TaxAmount",
-						"type": "String"
-					},
-					{
-						"name": "TransactionAmount",
-						"type": "String"
-					},
-					{
-						"name": "OutstandingBalance",
-						"type": "String"
-					},
-					{
-						"name": "FinalizationDate",
-						"type": "String"
-					},
-					{
-						"name": "IsFinalized",
-						"type": "String"
-					},
-					{
-						"name": "LastEditedBy",
-						"type": "String"
-					},
-					{
-						"name": "LastEditedWhen",
-						"type": "String"
-					},
-					{
-						"name": "ingest_time",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/BlobStorageLinkedService')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Data flow1",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "1.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "dataflow_addSK",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"PurchaseOrderLines": {},
-									"PurchaseOrders": {},
-									"suppliers": {},
-									"supplierTransactions": {},
-									"SupplierCategories": {},
-									"sink1": {},
-									"sink2": {},
-									"sink3": {},
-									"sink4": {},
-									"sink5": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/dataflow_addSK')]"
+				"[concat(variables('factoryId'), '/datasets/SupplierCategories')]",
+				"[concat(variables('factoryId'), '/datasets/PurchaseOrdersKey')]",
+				"[concat(variables('factoryId'), '/datasets/PurchaseOrderLinesKey')]",
+				"[concat(variables('factoryId'), '/datasets/SuppliersKey')]",
+				"[concat(variables('factoryId'), '/datasets/SupplierTransactionsKey')]",
+				"[concat(variables('factoryId'), '/datasets/SupplierCategoriesKey')]"
 			]
 		}
 	]
