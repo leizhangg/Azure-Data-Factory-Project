@@ -64,7 +64,7 @@
 				},
 				{
 					"dataset": {
-						"referenceName": "SupplierTransactions",
+						"referenceName": "SupplierTransactionsKey",
 						"type": "DatasetReference"
 					},
 					"name": "sink4"
@@ -227,24 +227,6 @@
 				"     skipDuplicateMapOutputs: true) ~> sink3",
 				"addSurrogateKey4 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     input(",
-				"          SupplierTransactionID as string,",
-				"          SupplierID as string,",
-				"          TransactionTypeID as string,",
-				"          PurchaseOrderID as string,",
-				"          PaymentMethodID as string,",
-				"          SupplierInvoiceNumber as string,",
-				"          TransactionDate as string,",
-				"          AmountExcludingTax as string,",
-				"          TaxAmount as string,",
-				"          TransactionAmount as string,",
-				"          OutstandingBalance as string,",
-				"          FinalizationDate as string,",
-				"          IsFinalized as string,",
-				"          LastEditedBy as string,",
-				"          LastEditedWhen as string,",
-				"          ingest_time as string",
-				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> sink4",
 				"addSurrogateKey5 sink(allowSchemaDrift: true,",
