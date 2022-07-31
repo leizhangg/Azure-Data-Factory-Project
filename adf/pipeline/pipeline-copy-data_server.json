@@ -1,5 +1,5 @@
 {
-	"name": "pipeline-copy-data",
+	"name": "pipeline-copy-data_server",
 	"properties": {
 		"activities": [
 			{
