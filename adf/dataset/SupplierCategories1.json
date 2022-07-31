@@ -1,0 +1,53 @@
+{
+	"name": "SupplierCategories1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "odsLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "02_integration_server"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "SupplierCategoryID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "SupplierCategoryName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "LastEditedBy",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ValidFrom",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "ValidTo",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "ingest_time",
+				"type": "nvarchar"
+			},
+			{
+				"name": "surrogate_key_sc",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "Purchasing",
+			"table": "SupplierCategories"
+		}
+	}
+}
