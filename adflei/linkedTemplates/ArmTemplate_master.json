@@ -11,10 +11,6 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'BlobStorageLinkedService'"
 		},
-		"integrationLinkedService_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'integrationLinkedService'"
-		},
 		"odsLinkedService_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'odsLinkedService'"
@@ -52,9 +48,6 @@
 					},
 					"BlobStorageLinkedService_connectionString": {
 						"value": "[parameters('BlobStorageLinkedService_connectionString')]"
-					},
-					"integrationLinkedService_connectionString": {
-						"value": "[parameters('integrationLinkedService_connectionString')]"
 					},
 					"odsLinkedService_connectionString": {
 						"value": "[parameters('odsLinkedService_connectionString')]"

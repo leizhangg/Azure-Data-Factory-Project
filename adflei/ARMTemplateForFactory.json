@@ -11,10 +11,6 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'BlobStorageLinkedService'"
 		},
-		"integrationLinkedService_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'integrationLinkedService'"
-		},
 		"odsLinkedService_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'odsLinkedService'"
@@ -174,7 +170,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pipeline-copy-data_copy1')]",
+			"name": "[concat(parameters('factoryName'), '/pipeline-copy-data_blob')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -322,6 +318,9 @@
 					"referenceName": "BlobStorageLinkedService",
 					"type": "LinkedServiceReference"
 				},
+				"folder": {
+					"name": "02-integration"
+				},
 				"annotations": [],
 				"type": "DelimitedText",
 				"typeProperties": {
@@ -335,190 +334,63 @@
 					"firstRowAsHeader": true,
 					"quoteChar": "\""
 				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/BlobStorageLinkedService')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/PurchaseOrderLines')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "odsLinkedService",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "02-Integration"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
 				"schema": [
 					{
 						"name": "PurchaseOrderLineID",
-						"type": "int",
-						"precision": 10
+						"type": "String"
 					},
 					{
 						"name": "PurchaseOrderID",
-						"type": "int",
-						"precision": 10
+						"type": "String"
 					},
 					{
 						"name": "StockItemID",
-						"type": "int",
-						"precision": 10
+						"type": "String"
 					},
 					{
 						"name": "OrderedOuters",
-						"type": "int",
-						"precision": 10
+						"type": "String"
 					},
 					{
 						"name": "Description",
-						"type": "nvarchar"
+						"type": "String"
 					},
 					{
 						"name": "ReceivedOuters",
-						"type": "int",
-						"precision": 10
+						"type": "String"
 					},
 					{
 						"name": "PackageTypeID",
-						"type": "int",
-						"precision": 10
+						"type": "String"
 					},
 					{
 						"name": "ExpectedUnitPricePerOuter",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 2
+						"type": "String"
 					},
 					{
 						"name": "LastReceiptDate",
-						"type": "date"
+						"type": "String"
 					},
 					{
 						"name": "IsOrderLineFinalized",
-						"type": "bit"
+						"type": "String"
 					},
 					{
 						"name": "LastEditedBy",
-						"type": "int",
-						"precision": 10
+						"type": "String"
 					},
 					{
 						"name": "LastEditedWhen",
-						"type": "datetime2",
-						"scale": 7
+						"type": "String"
 					},
 					{
 						"name": "ingest_time",
-						"type": "nvarchar"
-					},
-					{
-						"name": "surrogate_key_pol",
-						"type": "int",
-						"precision": 10
+						"type": "String"
 					}
-				],
-				"typeProperties": {
-					"schema": "Purchasing",
-					"table": "PurchaseOrderLines"
-				}
+				]
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/odsLinkedService')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/PurchaseOrders')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "odsLinkedService",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "02-Integration"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "PurchaseOrderID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "SupplierID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "OrderDate",
-						"type": "date"
-					},
-					{
-						"name": "DeliveryMethodID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "ContactPersonID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "ExpectedDeliveryDate",
-						"type": "date"
-					},
-					{
-						"name": "SupplierReference",
-						"type": "nvarchar"
-					},
-					{
-						"name": "IsOrderFinalized",
-						"type": "bit"
-					},
-					{
-						"name": "Comments",
-						"type": "nvarchar"
-					},
-					{
-						"name": "InternalComments",
-						"type": "nvarchar"
-					},
-					{
-						"name": "LastEditedBy",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "LastEditedWhen",
-						"type": "datetime2",
-						"scale": 7
-					},
-					{
-						"name": "ingest_time",
-						"type": "nvarchar"
-					},
-					{
-						"name": "surrogate_key_po",
-						"type": "int",
-						"precision": 10
-					}
-				],
-				"typeProperties": {
-					"schema": "Purchasing",
-					"table": "PurchaseOrders"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/odsLinkedService')]"
+				"[concat(variables('factoryId'), '/linkedServices/BlobStorageLinkedService')]"
 			]
 		},
 		{
@@ -557,38 +429,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/sourceDataLinkedService')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/integrationTable')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "BlobStorageLinkedService",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "02-Integration"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "integrationTable.csv",
-						"folderPath": "integration",
-						"container": "adfproject"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/BlobStorageLinkedService')]"
 			]
 		},
 		{
@@ -665,19 +505,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/integrationLinkedService')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"connectionString": "[parameters('integrationLinkedService_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/odsLinkedService')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -703,6 +530,874 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow_addSK')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "PurchaseOrderLines",
+								"type": "DatasetReference"
+							},
+							"name": "PurchaseOrderLines"
+						},
+						{
+							"dataset": {
+								"referenceName": "PurchaseOrders",
+								"type": "DatasetReference"
+							},
+							"name": "PurchaseOrders"
+						},
+						{
+							"dataset": {
+								"referenceName": "Suppliers",
+								"type": "DatasetReference"
+							},
+							"name": "suppliers"
+						},
+						{
+							"dataset": {
+								"referenceName": "SupplierTransactions",
+								"type": "DatasetReference"
+							},
+							"name": "supplierTransactions"
+						},
+						{
+							"dataset": {
+								"referenceName": "SupplierCategories",
+								"type": "DatasetReference"
+							},
+							"name": "SupplierCategories"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "PurchaseOrders",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						},
+						{
+							"dataset": {
+								"referenceName": "PurchaseOrderLines",
+								"type": "DatasetReference"
+							},
+							"name": "sink2"
+						},
+						{
+							"dataset": {
+								"referenceName": "Suppliers",
+								"type": "DatasetReference"
+							},
+							"name": "sink3"
+						},
+						{
+							"dataset": {
+								"referenceName": "SupplierTransactions",
+								"type": "DatasetReference"
+							},
+							"name": "sink4"
+						},
+						{
+							"dataset": {
+								"referenceName": "SupplierCategories",
+								"type": "DatasetReference"
+							},
+							"name": "sink5"
+						}
+					],
+					"transformations": [
+						{
+							"name": "addSurrogateKey1"
+						},
+						{
+							"name": "addSurrogateKey2"
+						},
+						{
+							"name": "addSurrogateKey3"
+						},
+						{
+							"name": "addSurrogateKey4"
+						},
+						{
+							"name": "addSurrogateKey5"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          PurchaseOrderLineID as string,",
+						"          PurchaseOrderID as string,",
+						"          StockItemID as string,",
+						"          OrderedOuters as string,",
+						"          Description as string,",
+						"          ReceivedOuters as string,",
+						"          PackageTypeID as string,",
+						"          ExpectedUnitPricePerOuter as string,",
+						"          LastReceiptDate as string,",
+						"          IsOrderLineFinalized as string,",
+						"          LastEditedBy as string,",
+						"          LastEditedWhen as string,",
+						"          ingest_time as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> PurchaseOrderLines",
+						"source(output(",
+						"          PurchaseOrderID as string,",
+						"          SupplierID as string,",
+						"          OrderDate as string,",
+						"          DeliveryMethodID as string,",
+						"          ContactPersonID as string,",
+						"          ExpectedDeliveryDate as string,",
+						"          SupplierReference as string,",
+						"          IsOrderFinalized as string,",
+						"          Comments as string,",
+						"          InternalComments as string,",
+						"          LastEditedBy as string,",
+						"          LastEditedWhen as string,",
+						"          ingest_time as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> PurchaseOrders",
+						"source(output(",
+						"          SupplierID as string,",
+						"          SupplierName as string,",
+						"          SupplierCategoryID as string,",
+						"          PrimaryContactPersonID as string,",
+						"          AlternateContactPersonID as string,",
+						"          DeliveryMethodID as string,",
+						"          DeliveryCityID as string,",
+						"          PostalCityID as string,",
+						"          SupplierReference as string,",
+						"          BankAccountName as string,",
+						"          BankAccountBranch as string,",
+						"          BankAccountCode as string,",
+						"          BankAccountNumber as string,",
+						"          BankInternationalCode as string,",
+						"          PaymentDays as string,",
+						"          InternalComments as string,",
+						"          PhoneNumber as string,",
+						"          FaxNumber as string,",
+						"          WebsiteURL as string,",
+						"          DeliveryAddressLine1 as string,",
+						"          DeliveryAddressLine2 as string,",
+						"          DeliveryPostalCode as string,",
+						"          DeliveryLocation as string,",
+						"          PostalAddressLine1 as string,",
+						"          PostalAddressLine2 as string,",
+						"          PostalPostalCode as string,",
+						"          LastEditedBy as string,",
+						"          ValidFrom as string,",
+						"          ValidTo as string,",
+						"          ingest_time as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> suppliers",
+						"source(output(",
+						"          SupplierTransactionID as string,",
+						"          SupplierID as string,",
+						"          TransactionTypeID as string,",
+						"          PurchaseOrderID as string,",
+						"          PaymentMethodID as string,",
+						"          SupplierInvoiceNumber as string,",
+						"          TransactionDate as string,",
+						"          AmountExcludingTax as string,",
+						"          TaxAmount as string,",
+						"          TransactionAmount as string,",
+						"          OutstandingBalance as string,",
+						"          FinalizationDate as string,",
+						"          IsFinalized as string,",
+						"          LastEditedBy as string,",
+						"          LastEditedWhen as string,",
+						"          ingest_time as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> supplierTransactions",
+						"source(output(",
+						"          SupplierCategoryID as string,",
+						"          SupplierCategoryName as string,",
+						"          LastEditedBy as string,",
+						"          ValidFrom as string,",
+						"          ValidTo as string,",
+						"          ingest_time as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> SupplierCategories",
+						"PurchaseOrderLines keyGenerate(output(surrogateKeyPOL as long),",
+						"     startAt: 1L,",
+						"     stepValue: 1L) ~> addSurrogateKey1",
+						"PurchaseOrders keyGenerate(output(SurrogateKeyPO as long),",
+						"     startAt: 1L,",
+						"     stepValue: 1L) ~> addSurrogateKey2",
+						"suppliers keyGenerate(output(SurrogateKeyS as long),",
+						"     startAt: 1L,",
+						"     stepValue: 1L) ~> addSurrogateKey3",
+						"supplierTransactions keyGenerate(output(SurrogateKeyST as long),",
+						"     startAt: 1L,",
+						"     stepValue: 1L) ~> addSurrogateKey4",
+						"SupplierCategories keyGenerate(output(SurrogateKeySC as long),",
+						"     startAt: 1L,",
+						"     stepValue: 1L) ~> addSurrogateKey5",
+						"addSurrogateKey2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          PurchaseOrderID as string,",
+						"          SupplierID as string,",
+						"          OrderDate as string,",
+						"          DeliveryMethodID as string,",
+						"          ContactPersonID as string,",
+						"          ExpectedDeliveryDate as string,",
+						"          SupplierReference as string,",
+						"          IsOrderFinalized as string,",
+						"          Comments as string,",
+						"          InternalComments as string,",
+						"          LastEditedBy as string,",
+						"          LastEditedWhen as string,",
+						"          ingest_time as string",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink1",
+						"addSurrogateKey1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          PurchaseOrderLineID as string,",
+						"          PurchaseOrderID as string,",
+						"          StockItemID as string,",
+						"          OrderedOuters as string,",
+						"          Description as string,",
+						"          ReceivedOuters as string,",
+						"          PackageTypeID as string,",
+						"          ExpectedUnitPricePerOuter as string,",
+						"          LastReceiptDate as string,",
+						"          IsOrderLineFinalized as string,",
+						"          LastEditedBy as string,",
+						"          LastEditedWhen as string,",
+						"          ingest_time as string",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink2",
+						"addSurrogateKey3 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          SupplierID as string,",
+						"          SupplierName as string,",
+						"          SupplierCategoryID as string,",
+						"          PrimaryContactPersonID as string,",
+						"          AlternateContactPersonID as string,",
+						"          DeliveryMethodID as string,",
+						"          DeliveryCityID as string,",
+						"          PostalCityID as string,",
+						"          SupplierReference as string,",
+						"          BankAccountName as string,",
+						"          BankAccountBranch as string,",
+						"          BankAccountCode as string,",
+						"          BankAccountNumber as string,",
+						"          BankInternationalCode as string,",
+						"          PaymentDays as string,",
+						"          InternalComments as string,",
+						"          PhoneNumber as string,",
+						"          FaxNumber as string,",
+						"          WebsiteURL as string,",
+						"          DeliveryAddressLine1 as string,",
+						"          DeliveryAddressLine2 as string,",
+						"          DeliveryPostalCode as string,",
+						"          DeliveryLocation as string,",
+						"          PostalAddressLine1 as string,",
+						"          PostalAddressLine2 as string,",
+						"          PostalPostalCode as string,",
+						"          LastEditedBy as string,",
+						"          ValidFrom as string,",
+						"          ValidTo as string,",
+						"          ingest_time as string",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink3",
+						"addSurrogateKey4 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          SupplierTransactionID as string,",
+						"          SupplierID as string,",
+						"          TransactionTypeID as string,",
+						"          PurchaseOrderID as string,",
+						"          PaymentMethodID as string,",
+						"          SupplierInvoiceNumber as string,",
+						"          TransactionDate as string,",
+						"          AmountExcludingTax as string,",
+						"          TaxAmount as string,",
+						"          TransactionAmount as string,",
+						"          OutstandingBalance as string,",
+						"          FinalizationDate as string,",
+						"          IsFinalized as string,",
+						"          LastEditedBy as string,",
+						"          LastEditedWhen as string,",
+						"          ingest_time as string",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink4",
+						"addSurrogateKey5 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          SupplierCategoryID as string,",
+						"          SupplierCategoryName as string,",
+						"          LastEditedBy as string,",
+						"          ValidFrom as string,",
+						"          ValidTo as string,",
+						"          ingest_time as string",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink5"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/PurchaseOrderLines')]",
+				"[concat(variables('factoryId'), '/datasets/PurchaseOrders')]",
+				"[concat(variables('factoryId'), '/datasets/Suppliers')]",
+				"[concat(variables('factoryId'), '/datasets/SupplierTransactions')]",
+				"[concat(variables('factoryId'), '/datasets/SupplierCategories')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PurchaseOrderLines')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BlobStorageLinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "02-integration"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Purchasing.PurchaseOrderLines.txt",
+						"folderPath": "ODS",
+						"container": "container1"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "PurchaseOrderLineID",
+						"type": "String"
+					},
+					{
+						"name": "PurchaseOrderID",
+						"type": "String"
+					},
+					{
+						"name": "StockItemID",
+						"type": "String"
+					},
+					{
+						"name": "OrderedOuters",
+						"type": "String"
+					},
+					{
+						"name": "Description",
+						"type": "String"
+					},
+					{
+						"name": "ReceivedOuters",
+						"type": "String"
+					},
+					{
+						"name": "PackageTypeID",
+						"type": "String"
+					},
+					{
+						"name": "ExpectedUnitPricePerOuter",
+						"type": "String"
+					},
+					{
+						"name": "LastReceiptDate",
+						"type": "String"
+					},
+					{
+						"name": "IsOrderLineFinalized",
+						"type": "String"
+					},
+					{
+						"name": "LastEditedBy",
+						"type": "String"
+					},
+					{
+						"name": "LastEditedWhen",
+						"type": "String"
+					},
+					{
+						"name": "ingest_time",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BlobStorageLinkedService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PurchaseOrders')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BlobStorageLinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "02-integration"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Purchasing.PurchaseOrders.txt",
+						"folderPath": "ODS",
+						"container": "container1"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "PurchaseOrderID",
+						"type": "String"
+					},
+					{
+						"name": "SupplierID",
+						"type": "String"
+					},
+					{
+						"name": "OrderDate",
+						"type": "String"
+					},
+					{
+						"name": "DeliveryMethodID",
+						"type": "String"
+					},
+					{
+						"name": "ContactPersonID",
+						"type": "String"
+					},
+					{
+						"name": "ExpectedDeliveryDate",
+						"type": "String"
+					},
+					{
+						"name": "SupplierReference",
+						"type": "String"
+					},
+					{
+						"name": "IsOrderFinalized",
+						"type": "String"
+					},
+					{
+						"name": "Comments",
+						"type": "String"
+					},
+					{
+						"name": "InternalComments",
+						"type": "String"
+					},
+					{
+						"name": "LastEditedBy",
+						"type": "String"
+					},
+					{
+						"name": "LastEditedWhen",
+						"type": "String"
+					},
+					{
+						"name": "ingest_time",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BlobStorageLinkedService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Suppliers')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BlobStorageLinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "02-integration"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Purchasing.Suppliers.txt",
+						"folderPath": "ODS",
+						"container": "container1"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "SupplierID",
+						"type": "String"
+					},
+					{
+						"name": "SupplierName",
+						"type": "String"
+					},
+					{
+						"name": "SupplierCategoryID",
+						"type": "String"
+					},
+					{
+						"name": "PrimaryContactPersonID",
+						"type": "String"
+					},
+					{
+						"name": "AlternateContactPersonID",
+						"type": "String"
+					},
+					{
+						"name": "DeliveryMethodID",
+						"type": "String"
+					},
+					{
+						"name": "DeliveryCityID",
+						"type": "String"
+					},
+					{
+						"name": "PostalCityID",
+						"type": "String"
+					},
+					{
+						"name": "SupplierReference",
+						"type": "String"
+					},
+					{
+						"name": "BankAccountName",
+						"type": "String"
+					},
+					{
+						"name": "BankAccountBranch",
+						"type": "String"
+					},
+					{
+						"name": "BankAccountCode",
+						"type": "String"
+					},
+					{
+						"name": "BankAccountNumber",
+						"type": "String"
+					},
+					{
+						"name": "BankInternationalCode",
+						"type": "String"
+					},
+					{
+						"name": "PaymentDays",
+						"type": "String"
+					},
+					{
+						"name": "InternalComments",
+						"type": "String"
+					},
+					{
+						"name": "PhoneNumber",
+						"type": "String"
+					},
+					{
+						"name": "FaxNumber",
+						"type": "String"
+					},
+					{
+						"name": "WebsiteURL",
+						"type": "String"
+					},
+					{
+						"name": "DeliveryAddressLine1",
+						"type": "String"
+					},
+					{
+						"name": "DeliveryAddressLine2",
+						"type": "String"
+					},
+					{
+						"name": "DeliveryPostalCode",
+						"type": "String"
+					},
+					{
+						"name": "DeliveryLocation",
+						"type": "String"
+					},
+					{
+						"name": "PostalAddressLine1",
+						"type": "String"
+					},
+					{
+						"name": "PostalAddressLine2",
+						"type": "String"
+					},
+					{
+						"name": "PostalPostalCode",
+						"type": "String"
+					},
+					{
+						"name": "LastEditedBy",
+						"type": "String"
+					},
+					{
+						"name": "ValidFrom",
+						"type": "String"
+					},
+					{
+						"name": "ValidTo",
+						"type": "String"
+					},
+					{
+						"name": "ingest_time",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BlobStorageLinkedService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SupplierCategories')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BlobStorageLinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "02-integration"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Purchasing.SupplierCategories.txt",
+						"folderPath": "ODS",
+						"container": "container1"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "SupplierCategoryID",
+						"type": "String"
+					},
+					{
+						"name": "SupplierCategoryName",
+						"type": "String"
+					},
+					{
+						"name": "LastEditedBy",
+						"type": "String"
+					},
+					{
+						"name": "ValidFrom",
+						"type": "String"
+					},
+					{
+						"name": "ValidTo",
+						"type": "String"
+					},
+					{
+						"name": "ingest_time",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BlobStorageLinkedService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SupplierTransactions')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BlobStorageLinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "02-integration"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Purchasing.SupplierTransactions.txt",
+						"folderPath": "ODS",
+						"container": "container1"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "SupplierTransactionID",
+						"type": "String"
+					},
+					{
+						"name": "SupplierID",
+						"type": "String"
+					},
+					{
+						"name": "TransactionTypeID",
+						"type": "String"
+					},
+					{
+						"name": "PurchaseOrderID",
+						"type": "String"
+					},
+					{
+						"name": "PaymentMethodID",
+						"type": "String"
+					},
+					{
+						"name": "SupplierInvoiceNumber",
+						"type": "String"
+					},
+					{
+						"name": "TransactionDate",
+						"type": "String"
+					},
+					{
+						"name": "AmountExcludingTax",
+						"type": "String"
+					},
+					{
+						"name": "TaxAmount",
+						"type": "String"
+					},
+					{
+						"name": "TransactionAmount",
+						"type": "String"
+					},
+					{
+						"name": "OutstandingBalance",
+						"type": "String"
+					},
+					{
+						"name": "FinalizationDate",
+						"type": "String"
+					},
+					{
+						"name": "IsFinalized",
+						"type": "String"
+					},
+					{
+						"name": "LastEditedBy",
+						"type": "String"
+					},
+					{
+						"name": "LastEditedWhen",
+						"type": "String"
+					},
+					{
+						"name": "ingest_time",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BlobStorageLinkedService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dataflow_addSK",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"PurchaseOrderLines": {},
+									"PurchaseOrders": {},
+									"suppliers": {},
+									"supplierTransactions": {},
+									"SupplierCategories": {},
+									"sink1": {},
+									"sink2": {},
+									"sink3": {},
+									"sink4": {},
+									"sink5": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/dataflow_addSK')]"
+			]
 		}
 	]
 }

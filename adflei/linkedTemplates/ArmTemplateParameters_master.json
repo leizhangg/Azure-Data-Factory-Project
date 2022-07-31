@@ -8,9 +8,6 @@
 		"BlobStorageLinkedService_connectionString": {
 			"value": ""
 		},
-		"integrationLinkedService_connectionString": {
-			"value": ""
-		},
 		"odsLinkedService_connectionString": {
 			"value": ""
 		},
