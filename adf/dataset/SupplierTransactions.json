@@ -1,5 +1,5 @@
 {
-	"name": "DelimitedText1",
+	"name": "SupplierTransactions",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "BlobStorageLinkedService",
@@ -13,6 +13,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
+				"fileName": "Purchasing.SupplierTransactions.txt",
 				"folderPath": "ODS",
 				"container": "container1"
 			},
@@ -23,7 +24,15 @@
 		},
 		"schema": [
 			{
-				"name": "PurchaseOrderLineID",
+				"name": "SupplierTransactionID",
+				"type": "String"
+			},
+			{
+				"name": "SupplierID",
+				"type": "String"
+			},
+			{
+				"name": "TransactionTypeID",
 				"type": "String"
 			},
 			{
@@ -31,35 +40,39 @@
 				"type": "String"
 			},
 			{
-				"name": "StockItemID",
+				"name": "PaymentMethodID",
 				"type": "String"
 			},
 			{
-				"name": "OrderedOuters",
+				"name": "SupplierInvoiceNumber",
 				"type": "String"
 			},
 			{
-				"name": "Description",
+				"name": "TransactionDate",
 				"type": "String"
 			},
 			{
-				"name": "ReceivedOuters",
+				"name": "AmountExcludingTax",
 				"type": "String"
 			},
 			{
-				"name": "PackageTypeID",
+				"name": "TaxAmount",
 				"type": "String"
 			},
 			{
-				"name": "ExpectedUnitPricePerOuter",
+				"name": "TransactionAmount",
 				"type": "String"
 			},
 			{
-				"name": "LastReceiptDate",
+				"name": "OutstandingBalance",
 				"type": "String"
 			},
 			{
-				"name": "IsOrderLineFinalized",
+				"name": "FinalizationDate",
+				"type": "String"
+			},
+			{
+				"name": "IsFinalized",
 				"type": "String"
 			},
 			{

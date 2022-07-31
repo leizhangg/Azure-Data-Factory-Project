@@ -5,14 +5,68 @@
 		"typeProperties": {
 			"sources": [
 				{
-					"name": "source1"
+					"dataset": {
+						"referenceName": "PurchaseOrderLines",
+						"type": "DatasetReference"
+					},
+					"name": "PurchaseOrderLines"
+				},
+				{
+					"dataset": {
+						"referenceName": "PurchaseOrders",
+						"type": "DatasetReference"
+					},
+					"name": "PurchaseOrders"
 				}
 			],
 			"sinks": [],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "orderlineJoinOrder"
+				}
+			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> source1"
+				"source(output(",
+				"          PurchaseOrderLineID as string,",
+				"          PurchaseOrderID as string,",
+				"          StockItemID as string,",
+				"          OrderedOuters as string,",
+				"          Description as string,",
+				"          ReceivedOuters as string,",
+				"          PackageTypeID as string,",
+				"          ExpectedUnitPricePerOuter as string,",
+				"          LastReceiptDate as string,",
+				"          IsOrderLineFinalized as string,",
+				"          LastEditedBy as string,",
+				"          LastEditedWhen as string,",
+				"          ingest_time as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> PurchaseOrderLines",
+				"source(output(",
+				"          PurchaseOrderID as string,",
+				"          SupplierID as string,",
+				"          OrderDate as string,",
+				"          DeliveryMethodID as string,",
+				"          ContactPersonID as string,",
+				"          ExpectedDeliveryDate as string,",
+				"          SupplierReference as string,",
+				"          IsOrderFinalized as string,",
+				"          Comments as string,",
+				"          InternalComments as string,",
+				"          LastEditedBy as string,",
+				"          LastEditedWhen as string,",
+				"          ingest_time as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> PurchaseOrders",
+				"PurchaseOrderLines, PurchaseOrders join(PurchaseOrderLines@PurchaseOrderID == PurchaseOrders@PurchaseOrderID,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> orderlineJoinOrder"
 			]
 		}
 	}

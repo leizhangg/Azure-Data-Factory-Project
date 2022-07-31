@@ -1,0 +1,148 @@
+{
+	"name": "Suppliers",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "BlobStorageLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "02-integration"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Purchasing.Suppliers.txt",
+				"folderPath": "ODS",
+				"container": "container1"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "SupplierID",
+				"type": "String"
+			},
+			{
+				"name": "SupplierName",
+				"type": "String"
+			},
+			{
+				"name": "SupplierCategoryID",
+				"type": "String"
+			},
+			{
+				"name": "PrimaryContactPersonID",
+				"type": "String"
+			},
+			{
+				"name": "AlternateContactPersonID",
+				"type": "String"
+			},
+			{
+				"name": "DeliveryMethodID",
+				"type": "String"
+			},
+			{
+				"name": "DeliveryCityID",
+				"type": "String"
+			},
+			{
+				"name": "PostalCityID",
+				"type": "String"
+			},
+			{
+				"name": "SupplierReference",
+				"type": "String"
+			},
+			{
+				"name": "BankAccountName",
+				"type": "String"
+			},
+			{
+				"name": "BankAccountBranch",
+				"type": "String"
+			},
+			{
+				"name": "BankAccountCode",
+				"type": "String"
+			},
+			{
+				"name": "BankAccountNumber",
+				"type": "String"
+			},
+			{
+				"name": "BankInternationalCode",
+				"type": "String"
+			},
+			{
+				"name": "PaymentDays",
+				"type": "String"
+			},
+			{
+				"name": "InternalComments",
+				"type": "String"
+			},
+			{
+				"name": "PhoneNumber",
+				"type": "String"
+			},
+			{
+				"name": "FaxNumber",
+				"type": "String"
+			},
+			{
+				"name": "WebsiteURL",
+				"type": "String"
+			},
+			{
+				"name": "DeliveryAddressLine1",
+				"type": "String"
+			},
+			{
+				"name": "DeliveryAddressLine2",
+				"type": "String"
+			},
+			{
+				"name": "DeliveryPostalCode",
+				"type": "String"
+			},
+			{
+				"name": "DeliveryLocation",
+				"type": "String"
+			},
+			{
+				"name": "PostalAddressLine1",
+				"type": "String"
+			},
+			{
+				"name": "PostalAddressLine2",
+				"type": "String"
+			},
+			{
+				"name": "PostalPostalCode",
+				"type": "String"
+			},
+			{
+				"name": "LastEditedBy",
+				"type": "String"
+			},
+			{
+				"name": "ValidFrom",
+				"type": "String"
+			},
+			{
+				"name": "ValidTo",
+				"type": "String"
+			},
+			{
+				"name": "ingest_time",
+				"type": "String"
+			}
+		]
+	}
+}

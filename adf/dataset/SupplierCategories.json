@@ -1,5 +1,5 @@
 {
-	"name": "DelimitedText1",
+	"name": "SupplierCategories",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "BlobStorageLinkedService",
@@ -13,6 +13,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
+				"fileName": "Purchasing.SupplierCategories.txt",
 				"folderPath": "ODS",
 				"container": "container1"
 			},
@@ -23,43 +24,11 @@
 		},
 		"schema": [
 			{
-				"name": "PurchaseOrderLineID",
+				"name": "SupplierCategoryID",
 				"type": "String"
 			},
 			{
-				"name": "PurchaseOrderID",
-				"type": "String"
-			},
-			{
-				"name": "StockItemID",
-				"type": "String"
-			},
-			{
-				"name": "OrderedOuters",
-				"type": "String"
-			},
-			{
-				"name": "Description",
-				"type": "String"
-			},
-			{
-				"name": "ReceivedOuters",
-				"type": "String"
-			},
-			{
-				"name": "PackageTypeID",
-				"type": "String"
-			},
-			{
-				"name": "ExpectedUnitPricePerOuter",
-				"type": "String"
-			},
-			{
-				"name": "LastReceiptDate",
-				"type": "String"
-			},
-			{
-				"name": "IsOrderLineFinalized",
+				"name": "SupplierCategoryName",
 				"type": "String"
 			},
 			{
@@ -67,7 +36,11 @@
 				"type": "String"
 			},
 			{
-				"name": "LastEditedWhen",
+				"name": "ValidFrom",
+				"type": "String"
+			},
+			{
+				"name": "ValidTo",
 				"type": "String"
 			},
 			{
