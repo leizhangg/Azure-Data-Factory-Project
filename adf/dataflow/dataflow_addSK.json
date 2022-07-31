@@ -43,7 +43,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "PurchaseOrders",
+						"referenceName": "PurchaseOrdersKey",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
@@ -215,21 +215,6 @@
 				"     stepValue: 1L) ~> addSurrogateKey5",
 				"addSurrogateKey2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     input(",
-				"          PurchaseOrderID as string,",
-				"          SupplierID as string,",
-				"          OrderDate as string,",
-				"          DeliveryMethodID as string,",
-				"          ContactPersonID as string,",
-				"          ExpectedDeliveryDate as string,",
-				"          SupplierReference as string,",
-				"          IsOrderFinalized as string,",
-				"          Comments as string,",
-				"          InternalComments as string,",
-				"          LastEditedBy as string,",
-				"          LastEditedWhen as string,",
-				"          ingest_time as string",
-				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> sink1",
 				"addSurrogateKey1 sink(allowSchemaDrift: true,",
