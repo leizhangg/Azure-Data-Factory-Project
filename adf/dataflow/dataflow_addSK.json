@@ -50,7 +50,7 @@
 				},
 				{
 					"dataset": {
-						"referenceName": "PurchaseOrderLines",
+						"referenceName": "PurchaseOrderLinesKey",
 						"type": "DatasetReference"
 					},
 					"name": "sink2"
@@ -234,21 +234,6 @@
 				"     skipDuplicateMapOutputs: true) ~> sink1",
 				"addSurrogateKey1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     input(",
-				"          PurchaseOrderLineID as string,",
-				"          PurchaseOrderID as string,",
-				"          StockItemID as string,",
-				"          OrderedOuters as string,",
-				"          Description as string,",
-				"          ReceivedOuters as string,",
-				"          PackageTypeID as string,",
-				"          ExpectedUnitPricePerOuter as string,",
-				"          LastReceiptDate as string,",
-				"          IsOrderLineFinalized as string,",
-				"          LastEditedBy as string,",
-				"          LastEditedWhen as string,",
-				"          ingest_time as string",
-				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> sink2",
 				"addSurrogateKey3 sink(allowSchemaDrift: true,",
