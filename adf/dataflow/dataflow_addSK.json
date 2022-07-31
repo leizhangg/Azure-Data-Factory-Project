@@ -71,7 +71,7 @@
 				},
 				{
 					"dataset": {
-						"referenceName": "SupplierCategories",
+						"referenceName": "SupplierCategoriesKey",
 						"type": "DatasetReference"
 					},
 					"name": "sink5"
@@ -231,14 +231,6 @@
 				"     skipDuplicateMapOutputs: true) ~> sink4",
 				"addSurrogateKey5 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     input(",
-				"          SupplierCategoryID as string,",
-				"          SupplierCategoryName as string,",
-				"          LastEditedBy as string,",
-				"          ValidFrom as string,",
-				"          ValidTo as string,",
-				"          ingest_time as string",
-				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> sink5"
 			]
