@@ -1,0 +1,132 @@
+{
+	"name": "dataflow_join_purchaseSupplier",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "joinedPurchaseTable",
+						"type": "DatasetReference"
+					},
+					"name": "joinedPurchaseTable"
+				},
+				{
+					"dataset": {
+						"referenceName": "joinedSupplierTable",
+						"type": "DatasetReference"
+					},
+					"name": "joinedSupplierTable"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "join_output_final",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          PurchaseOrderLineID as integer,",
+				"          PurchaseOrderID as integer,",
+				"          StockItemID as integer,",
+				"          OrderedOuters as integer,",
+				"          Description as string,",
+				"          ReceivedOuters as integer,",
+				"          PackageTypeID as integer,",
+				"          ExpectedUnitPricePerOuter as double,",
+				"          LastReceiptDate as date,",
+				"          IsOrderLineFinalized as boolean,",
+				"          LastEditedBy as integer,",
+				"          LastEditedWhen as timestamp,",
+				"          ingest_time as timestamp,",
+				"          surrogateKeyPOL as integer,",
+				"          SupplierID as integer,",
+				"          OrderDate as date,",
+				"          DeliveryMethodID as integer,",
+				"          ContactPersonID as integer,",
+				"          ExpectedDeliveryDate as date,",
+				"          SupplierReference as string,",
+				"          IsOrderFinalized as boolean,",
+				"          Comments as string,",
+				"          InternalComments as string,",
+				"          surrogateKeyPO as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> joinedPurchaseTable",
+				"source(output(",
+				"          SupplierID as integer,",
+				"          SupplierName as string,",
+				"          SupplierCategoryID as integer,",
+				"          PrimaryContactPersonID as integer,",
+				"          AlternateContactPersonID as integer,",
+				"          DeliveryMethodID as integer,",
+				"          DeliveryCityID as integer,",
+				"          PostalCityID as integer,",
+				"          SupplierReference as string,",
+				"          BankAccountName as string,",
+				"          BankAccountBranch as string,",
+				"          BankAccountCode as string,",
+				"          BankAccountNumber as string,",
+				"          BankInternationalCode as string,",
+				"          PaymentDays as integer,",
+				"          InternalComments as string,",
+				"          PhoneNumber as string,",
+				"          FaxNumber as string,",
+				"          WebsiteURL as string,",
+				"          DeliveryAddressLine1 as string,",
+				"          DeliveryAddressLine2 as string,",
+				"          DeliveryPostalCode as string,",
+				"          DeliveryLocation as string,",
+				"          PostalAddressLine1 as string,",
+				"          PostalAddressLine2 as string,",
+				"          PostalPostalCode as string,",
+				"          LastEditedBy as integer,",
+				"          ValidFrom as timestamp,",
+				"          ValidTo as timestamp,",
+				"          ingest_time as timestamp,",
+				"          surrogate_key_supplier as integer,",
+				"          SupplierCategoryName as string,",
+				"          surrogate_key_SC as integer,",
+				"          SupplierTransactionID as integer,",
+				"          TransactionTypeID as integer,",
+				"          PurchaseOrderID as integer,",
+				"          PaymentMethodID as integer,",
+				"          SupplierInvoiceNumber as integer,",
+				"          TransactionDate as date,",
+				"          AmountExcludingTax as double,",
+				"          TaxAmount as double,",
+				"          TransactionAmount as double,",
+				"          OutstandingBalance as double,",
+				"          FinalizationDate as date,",
+				"          IsFinalized as boolean,",
+				"          LastEditedWhen as timestamp,",
+				"          surrogate_key_ST as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> joinedSupplierTable",
+				"joinedPurchaseTable, joinedSupplierTable join(joinedPurchaseTable@SupplierID == joinedSupplierTable@SupplierID,",
+				"     joinType:'outer',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['finalIntegrationTable.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}
