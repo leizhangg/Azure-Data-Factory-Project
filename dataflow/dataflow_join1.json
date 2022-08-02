@@ -1,5 +1,5 @@
 {
-	"name": "dataflow_addKey",
+	"name": "dataflow_join1",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -22,7 +22,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "OutputOrderLineOrder",
+						"referenceName": "output",
 						"type": "DatasetReference"
 					},
 					"name": "OutputOrderLineOrder"
@@ -89,8 +89,11 @@
 				"     broadcast: 'auto')~> joinPolPo",
 				"joinPolPo sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     partitionFileNames:['PolPoJoinedTable.csv'],",
+				"     truncate: true,",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> OutputOrderLineOrder"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> OutputOrderLineOrder"
 			]
 		}
 	}
