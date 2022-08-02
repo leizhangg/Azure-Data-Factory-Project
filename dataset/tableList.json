@@ -6,6 +6,9 @@
 			"referenceName": "SqlDatabaseLinkedService",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "01-copyData"
+		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": [

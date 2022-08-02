@@ -1,0 +1,78 @@
+{
+	"name": "PurchaseOrderLines",
+	"properties": {
+		"description": "Purchasing_PurchaseOrderLines file in blob storage ",
+		"linkedServiceName": {
+			"referenceName": "BlobStorageLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Purchasing_PurchaseOrderLines.csv",
+				"folderPath": "ODS",
+				"container": "container"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "PurchaseOrderLineID",
+				"type": "String"
+			},
+			{
+				"name": "PurchaseOrderID",
+				"type": "String"
+			},
+			{
+				"name": "StockItemID",
+				"type": "String"
+			},
+			{
+				"name": "OrderedOuters",
+				"type": "String"
+			},
+			{
+				"name": "Description",
+				"type": "String"
+			},
+			{
+				"name": "ReceivedOuters",
+				"type": "String"
+			},
+			{
+				"name": "PackageTypeID",
+				"type": "String"
+			},
+			{
+				"name": "ExpectedUnitPricePerOuter",
+				"type": "String"
+			},
+			{
+				"name": "LastReceiptDate",
+				"type": "String"
+			},
+			{
+				"name": "IsOrderLineFinalized",
+				"type": "String"
+			},
+			{
+				"name": "LastEditedBy",
+				"type": "String"
+			},
+			{
+				"name": "LastEditedWhen",
+				"type": "String"
+			},
+			{
+				"name": "ingest_time",
+				"type": "String"
+			}
+		]
+	}
+}

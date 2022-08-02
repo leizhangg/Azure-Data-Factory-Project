@@ -1,0 +1,50 @@
+{
+	"name": "SupplierCategories",
+	"properties": {
+		"description": "Purchasing_SupplierCategories file from blob storage",
+		"linkedServiceName": {
+			"referenceName": "BlobStorageLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Purchasing_SupplierCategories.csv",
+				"folderPath": "ODS",
+				"container": "container"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "SupplierCategoryID",
+				"type": "String"
+			},
+			{
+				"name": "SupplierCategoryName",
+				"type": "String"
+			},
+			{
+				"name": "LastEditedBy",
+				"type": "String"
+			},
+			{
+				"name": "ValidFrom",
+				"type": "String"
+			},
+			{
+				"name": "ValidTo",
+				"type": "String"
+			},
+			{
+				"name": "ingest_time",
+				"type": "String"
+			}
+		]
+	}
+}

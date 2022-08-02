@@ -11,6 +11,9 @@
 				"type": "string"
 			}
 		},
+		"folder": {
+			"name": "01-copyData"
+		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
