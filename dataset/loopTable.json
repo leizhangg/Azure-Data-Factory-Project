@@ -1,7 +1,7 @@
 {
 	"name": "loopTable",
 	"properties": {
-		"description": "table used in for each loop",
+		"description": "table used in forEach loop",
 		"linkedServiceName": {
 			"referenceName": "SqlDatabaseLinkedService",
 			"type": "LinkedServiceReference"
