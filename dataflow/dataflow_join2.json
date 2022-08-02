@@ -26,7 +26,15 @@
 					"name": "supplierTransaction"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "output_supplier",
+						"type": "DatasetReference"
+					},
+					"name": "outputSupplier"
+				}
+			],
 			"transformations": [
 				{
 					"name": "surrogateKey1"
@@ -130,7 +138,13 @@
 				"     joinType:'outer',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> join2"
+				"     broadcast: 'auto')~> join2",
+				"join2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['suppliersJoinedTable.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> outputSupplier"
 			]
 		}
 	}
