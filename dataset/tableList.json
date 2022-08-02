@@ -1,6 +1,7 @@
 {
 	"name": "tableList",
 	"properties": {
+		"description": "get the table list from OLTP",
 		"linkedServiceName": {
 			"referenceName": "SqlDatabaseLinkedService",
 			"type": "LinkedServiceReference"

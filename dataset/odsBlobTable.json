@@ -1,6 +1,7 @@
 {
 	"name": "odsBlobTable",
 	"properties": {
+		"description": "sink ODS table of selected table list",
 		"linkedServiceName": {
 			"referenceName": "BlobStorageLinkedService",
 			"type": "LinkedServiceReference"
