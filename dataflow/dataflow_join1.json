@@ -22,7 +22,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "output",
+						"referenceName": "Join_output_purchase",
 						"type": "DatasetReference"
 					},
 					"name": "OutputOrderLineOrder"

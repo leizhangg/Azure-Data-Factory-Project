@@ -1,5 +1,5 @@
 {
-	"name": "output",
+	"name": "Join_output_purchase",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "BlobStorageLinkedService",
