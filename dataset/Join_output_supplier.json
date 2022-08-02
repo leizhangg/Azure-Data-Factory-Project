@@ -18,6 +18,103 @@
 			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
-		"schema": []
+		"schema": [
+			{
+				"name": "PurchaseOrderLineID",
+				"type": "String"
+			},
+			{
+				"name": "PurchaseOrderID",
+				"type": "String"
+			},
+			{
+				"name": "StockItemID",
+				"type": "String"
+			},
+			{
+				"name": "OrderedOuters",
+				"type": "String"
+			},
+			{
+				"name": "Description",
+				"type": "String"
+			},
+			{
+				"name": "ReceivedOuters",
+				"type": "String"
+			},
+			{
+				"name": "PackageTypeID",
+				"type": "String"
+			},
+			{
+				"name": "ExpectedUnitPricePerOuter",
+				"type": "String"
+			},
+			{
+				"name": "LastReceiptDate",
+				"type": "String"
+			},
+			{
+				"name": "IsOrderLineFinalized",
+				"type": "String"
+			},
+			{
+				"name": "LastEditedBy",
+				"type": "String"
+			},
+			{
+				"name": "LastEditedWhen",
+				"type": "String"
+			},
+			{
+				"name": "ingest_time",
+				"type": "String"
+			},
+			{
+				"name": "surrogateKeyPOL",
+				"type": "String"
+			},
+			{
+				"name": "SupplierID",
+				"type": "String"
+			},
+			{
+				"name": "OrderDate",
+				"type": "String"
+			},
+			{
+				"name": "DeliveryMethodID",
+				"type": "String"
+			},
+			{
+				"name": "ContactPersonID",
+				"type": "String"
+			},
+			{
+				"name": "ExpectedDeliveryDate",
+				"type": "String"
+			},
+			{
+				"name": "SupplierReference",
+				"type": "String"
+			},
+			{
+				"name": "IsOrderFinalized",
+				"type": "String"
+			},
+			{
+				"name": "Comments",
+				"type": "String"
+			},
+			{
+				"name": "InternalComments",
+				"type": "String"
+			},
+			{
+				"name": "surrogateKeyPO",
+				"type": "String"
+			}
+		]
 	}
 }

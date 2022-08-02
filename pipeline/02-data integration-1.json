@@ -17,7 +17,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "dataflow_join1",
+						"referenceName": "dataflow_join_purchase",
 						"type": "DataFlowReference"
 					},
 					"compute": {
