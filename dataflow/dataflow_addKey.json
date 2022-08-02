@@ -1,0 +1,97 @@
+{
+	"name": "dataflow_addKey",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "PurchaseOrderLines",
+						"type": "DatasetReference"
+					},
+					"name": "purchasOrderLines"
+				},
+				{
+					"dataset": {
+						"referenceName": "PurchaseOrders",
+						"type": "DatasetReference"
+					},
+					"name": "PurchaseOrders"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "OutputOrderLineOrder",
+						"type": "DatasetReference"
+					},
+					"name": "OutputOrderLineOrder"
+				}
+			],
+			"transformations": [
+				{
+					"name": "surrogateKey1"
+				},
+				{
+					"name": "surrogateKey2"
+				},
+				{
+					"name": "joinPolPo"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          PurchaseOrderLineID as integer,",
+				"          PurchaseOrderID as integer,",
+				"          StockItemID as integer,",
+				"          OrderedOuters as integer,",
+				"          Description as string,",
+				"          ReceivedOuters as integer,",
+				"          PackageTypeID as integer,",
+				"          ExpectedUnitPricePerOuter as double,",
+				"          LastReceiptDate as date 'yyyy-MM-dd',",
+				"          IsOrderLineFinalized as boolean,",
+				"          LastEditedBy as integer,",
+				"          LastEditedWhen as date 'yyyy/MM/dd',",
+				"          ingest_time as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> purchasOrderLines",
+				"source(output(",
+				"          PurchaseOrderID as integer,",
+				"          SupplierID as integer,",
+				"          OrderDate as date 'yyyy/MM/dd',",
+				"          DeliveryMethodID as integer,",
+				"          ContactPersonID as integer,",
+				"          ExpectedDeliveryDate as date 'yyyy-MM-dd',",
+				"          SupplierReference as string,",
+				"          IsOrderFinalized as boolean,",
+				"          Comments as string,",
+				"          InternalComments as string,",
+				"          LastEditedBy as integer,",
+				"          LastEditedWhen as date,",
+				"          ingest_time as timestamp 'yyyy-MM-dd\\'T\\'HH:mm:ss'",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> PurchaseOrders",
+				"purchasOrderLines keyGenerate(output(surrogateKeyPOL as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKey1",
+				"PurchaseOrders keyGenerate(output(surrogateKeyPO as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKey2",
+				"surrogateKey1, surrogateKey2 join(purchasOrderLines@PurchaseOrderID == PurchaseOrders@PurchaseOrderID,",
+				"     joinType:'outer',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinPolPo",
+				"joinPolPo sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> OutputOrderLineOrder"
+			]
+		}
+	}
+}
