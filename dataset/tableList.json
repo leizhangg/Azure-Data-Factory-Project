@@ -1,0 +1,26 @@
+{
+	"name": "tableList",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SqlDatabaseLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "table_schema",
+				"type": "varchar"
+			},
+			{
+				"name": "table_name",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "Purchasing",
+			"table": "getTableList"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,9 @@
+{
+	"name": "wwi-adf",
+	"location": "eastus2",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "4c52f3a2-9188-450a-a996-fe6970f8d947",
+		"tenantId": "771f12d8-a407-4f42-ab3e-0f566bf06c3f"
+	}
+}
