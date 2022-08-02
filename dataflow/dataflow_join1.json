@@ -90,7 +90,6 @@
 				"joinPolPo sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['PolPoJoinedTable.csv'],",
-				"     truncate: true,",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> OutputOrderLineOrder"
