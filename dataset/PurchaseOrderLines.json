@@ -6,6 +6,9 @@
 			"referenceName": "BlobStorageLinkedService",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "02-data-integration"
+		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
