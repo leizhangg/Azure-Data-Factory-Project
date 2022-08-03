@@ -117,7 +117,7 @@
 				"          {Calendar Month Number} = month(ValidFrom),",
 				"          {Calendar Year} = year(ValidFrom),",
 				"          {ISO Week Number} = weekOfYear(ValidFrom),",
-				"          {[Month} = ERROR_FUNCTION('')) ~> derivedColumn1",
+				"          Month = month(ValidFrom)) ~> derivedColumn1",
 				"derivedColumn1 select(mapColumn(",
 				"          Date,",
 				"          Day,",
