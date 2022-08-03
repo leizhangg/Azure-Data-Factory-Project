@@ -1,0 +1,122 @@
+{
+	"name": "selectDateDim",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "join_output_final",
+						"type": "DatasetReference"
+					},
+					"name": "integrationTableSource"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "output_Trans_Dim",
+						"type": "DatasetReference"
+					},
+					"name": "sinkTranDim"
+				}
+			],
+			"transformations": [
+				{
+					"name": "selectAsDateDim"
+				},
+				{
+					"name": "surrogateKeyTranKey"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          PurchaseOrderLineID as short,",
+				"          PurchaseOrderID as short,",
+				"          StockItemID as short,",
+				"          OrderedOuters as short,",
+				"          Description as string,",
+				"          ReceivedOuters as short,",
+				"          PackageTypeID as short,",
+				"          ExpectedUnitPricePerOuter as double,",
+				"          LastReceiptDate as date,",
+				"          IsOrderLineFinalized as boolean,",
+				"          LastEditedBy as short,",
+				"          LastEditedWhen as string,",
+				"          ingest_time as string,",
+				"          surrogateKeyPOL as short,",
+				"          SupplierID as short,",
+				"          OrderDate as string,",
+				"          DeliveryMethodID as short,",
+				"          ContactPersonID as short,",
+				"          ExpectedDeliveryDate as date,",
+				"          SupplierReference as integer,",
+				"          IsOrderFinalized as boolean,",
+				"          Comments as string,",
+				"          InternalComments as string,",
+				"          surrogateKeyPO as short,",
+				"          SupplierName as string,",
+				"          SupplierCategoryID as short,",
+				"          PrimaryContactPersonID as short,",
+				"          AlternateContactPersonID as short,",
+				"          DeliveryCityID as short,",
+				"          PostalCityID as short,",
+				"          BankAccountName as string,",
+				"          BankAccountBranch as string,",
+				"          BankAccountCode as integer,",
+				"          BankAccountNumber as long,",
+				"          BankInternationalCode as short,",
+				"          PaymentDays as short,",
+				"          PhoneNumber as string,",
+				"          FaxNumber as string,",
+				"          WebsiteURL as string,",
+				"          DeliveryAddressLine1 as string,",
+				"          DeliveryAddressLine2 as string,",
+				"          DeliveryPostalCode as integer,",
+				"          DeliveryLocation as string,",
+				"          PostalAddressLine1 as string,",
+				"          PostalAddressLine2 as string,",
+				"          PostalPostalCode as integer,",
+				"          ValidFrom as timestamp,",
+				"          ValidTo as timestamp,",
+				"          surrogate_key_supplier as short,",
+				"          SupplierCategoryName as string,",
+				"          surrogate_key_SC as short,",
+				"          SupplierTransactionID as integer,",
+				"          TransactionTypeID as short,",
+				"          PaymentMethodID as short,",
+				"          SupplierInvoiceNumber as short,",
+				"          TransactionDate as date,",
+				"          AmountExcludingTax as double,",
+				"          TaxAmount as double,",
+				"          TransactionAmount as double,",
+				"          OutstandingBalance as string,",
+				"          FinalizationDate as date,",
+				"          IsFinalized as boolean,",
+				"          surrogate_key_ST as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> integrationTableSource",
+				"integrationTableSource select(mapColumn(",
+				"          each(match(min(ValidFrom)),",
+				"               min(ValidFrom) = $$),",
+				"          each(match(ERROR_FUNCTION('')),",
+				"               ERROR_FUNCTION('') = $$),",
+				"          ValidFrom",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectAsDateDim",
+				"selectAsDateDim keyGenerate(output({Transaction Type Key} as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKeyTranKey",
+				"surrogateKeyTranKey sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Dimension_Transaction Type.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkTranDim"
+			]
+		}
+	}
+}
