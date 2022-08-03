@@ -1,5 +1,5 @@
 {
-	"name": "selectDimColumn",
+	"name": "selectSupplierDim",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
