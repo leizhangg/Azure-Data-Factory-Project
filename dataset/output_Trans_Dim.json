@@ -5,6 +5,9 @@
 			"referenceName": "BlobStorageLinkedService",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "03-createDim"
+		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
