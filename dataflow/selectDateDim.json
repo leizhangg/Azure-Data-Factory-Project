@@ -15,15 +15,34 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "output_Trans_Dim",
+						"referenceName": "output_date_Dim",
 						"type": "DatasetReference"
 					},
-					"name": "sinkTranDim"
+					"name": "sinkDateDim"
+				},
+				{
+					"dataset": {
+						"referenceName": "output_order_Dim",
+						"type": "DatasetReference"
+					},
+					"name": "sinkOrderDim"
 				}
 			],
 			"transformations": [
 				{
 					"name": "derivedColumn1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "surrogateOrderKey"
+				},
+				{
+					"name": "select3"
 				}
 			],
 			"scriptLines": [
@@ -40,7 +59,7 @@
 				"          IsOrderLineFinalized as boolean,",
 				"          LastEditedBy as short,",
 				"          LastEditedWhen as string,",
-				"          ingest_time as string,",
+				"          ingest_time as date,",
 				"          surrogateKeyPOL as short,",
 				"          SupplierID as short,",
 				"          OrderDate as string,",
@@ -61,7 +80,7 @@
 				"          BankAccountName as string,",
 				"          BankAccountBranch as string,",
 				"          BankAccountCode as integer,",
-				"          BankAccountNumber as long,",
+				"          BankAccountNumber as string,",
 				"          BankInternationalCode as short,",
 				"          PaymentDays as short,",
 				"          PhoneNumber as string,",
@@ -100,13 +119,54 @@
 				"          {Day Number} = dayOfMonth(ValidFrom),",
 				"          {Calendar Month Number} = month(ValidFrom),",
 				"          {Calendar Year} = year(ValidFrom),",
-				"          column1 = ERROR_FUNCTION('')) ~> derivedColumn1",
-				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"          {ISO Week Number} = weekOfYear(ValidFrom),",
+				"          {[Month} = ERROR_FUNCTION('')) ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          Date,",
+				"          Day,",
+				"          {Calendar Month Number},",
+				"          {Calendar Year},",
+				"          {Day Number},",
+				"          {ISO Week Number}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"integrationTableSource select(mapColumn(",
+				"          PurchaseOrderID,",
+				"          Description,",
+				"          PackageTypeID,",
+				"          IsOrderFinalized,",
+				"          IsFinalized",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2 keyGenerate(output({Order Key} as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateOrderKey",
+				"integrationTableSource select(mapColumn(",
+				"          each(match(/* All input columns */ true()),",
+				"               /* Input name */ $$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
+				"select1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     partitionFileNames:['Dimension_Transaction Type.csv'],",
+				"     partitionFileNames:['Dimension_Date.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> sinkTranDim"
+				"     partitionBy('hash', 1)) ~> sinkDateDim",
+				"surrogateOrderKey sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          Column_1 as string,",
+				"          Column_2 as string,",
+				"          Column_3 as string,",
+				"          Column_4 as string,",
+				"          Column_5 as string,",
+				"          Column_6 as string",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sinkOrderDim"
 			]
 		}
 	}
