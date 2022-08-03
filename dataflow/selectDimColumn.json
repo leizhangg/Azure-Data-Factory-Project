@@ -1,5 +1,5 @@
 {
-	"name": "selectColumn",
+	"name": "selectDimColumn",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -12,10 +12,21 @@
 					"name": "integrationTableSource"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "output_Supplier_Dim",
+						"type": "DatasetReference"
+					},
+					"name": "sinkSupploerDim"
+				}
+			],
 			"transformations": [
 				{
-					"name": "select1"
+					"name": "selectAsSupplierDim"
+				},
+				{
+					"name": "surrogateKeySupplierKey"
 				}
 			],
 			"scriptLines": [
@@ -88,72 +99,26 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> integrationTableSource",
 				"integrationTableSource select(mapColumn(",
-				"          PurchaseOrderLineID,",
-				"          PurchaseOrderID,",
-				"          StockItemID,",
-				"          OrderedOuters,",
-				"          Description,",
-				"          ReceivedOuters,",
-				"          PackageTypeID,",
-				"          ExpectedUnitPricePerOuter,",
-				"          LastReceiptDate,",
-				"          IsOrderLineFinalized,",
-				"          LastEditedBy,",
-				"          LastEditedWhen,",
-				"          ingest_time,",
-				"          surrogateKeyPOL,",
 				"          SupplierID,",
-				"          OrderDate,",
-				"          DeliveryMethodID,",
-				"          ContactPersonID,",
-				"          ExpectedDeliveryDate,",
-				"          SupplierReference,",
-				"          IsOrderFinalized,",
-				"          Comments,",
-				"          InternalComments,",
-				"          surrogateKeyPO,",
-				"          SupplierName,",
-				"          SupplierCategoryID,",
-				"          PrimaryContactPersonID,",
-				"          AlternateContactPersonID,",
-				"          DeliveryCityID,",
-				"          PostalCityID,",
-				"          BankAccountName,",
-				"          BankAccountBranch,",
-				"          BankAccountCode,",
-				"          BankAccountNumber,",
-				"          BankInternationalCode,",
-				"          PaymentDays,",
-				"          PhoneNumber,",
-				"          FaxNumber,",
-				"          WebsiteURL,",
-				"          DeliveryAddressLine1,",
-				"          DeliveryAddressLine2,",
-				"          DeliveryPostalCode,",
-				"          DeliveryLocation,",
-				"          PostalAddressLine1,",
-				"          PostalAddressLine2,",
-				"          PostalPostalCode,",
+				"          Supplier = SupplierName,",
+				"          Category = SupplierCategoryName,",
+				"          {Supplier Reference} = SupplierReference,",
+				"          {Payment Days} = PaymentDays,",
+				"          {Postal Code} = DeliveryPostalCode,",
 				"          ValidFrom,",
-				"          ValidTo,",
-				"          surrogate_key_supplier,",
-				"          SupplierCategoryName,",
-				"          surrogate_key_SC,",
-				"          SupplierTransactionID,",
-				"          TransactionTypeID,",
-				"          PaymentMethodID,",
-				"          SupplierInvoiceNumber,",
-				"          TransactionDate,",
-				"          AmountExcludingTax,",
-				"          TaxAmount,",
-				"          TransactionAmount,",
-				"          OutstandingBalance,",
-				"          FinalizationDate,",
-				"          IsFinalized,",
-				"          surrogate_key_ST",
+				"          ValidTo",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1"
+				"     skipDuplicateMapOutputs: true) ~> selectAsSupplierDim",
+				"selectAsSupplierDim keyGenerate(output({Supplier Key} as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKeySupplierKey",
+				"surrogateKeySupplierKey sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Dimension_Supplier.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkSupploerDim"
 			]
 		}
 	}
