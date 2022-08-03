@@ -15,10 +15,10 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "output_Pay_Dim",
+						"referenceName": "output_city_Dim",
 						"type": "DatasetReference"
 					},
-					"name": "sinkPayDim"
+					"name": "sinkCityDim"
 				}
 			],
 			"transformations": [
@@ -26,7 +26,7 @@
 					"name": "selectAsCityDim"
 				},
 				{
-					"name": "surrogateKeyPayKey"
+					"name": "surrogateKeyCityKey"
 				}
 			],
 			"scriptLines": [
@@ -107,15 +107,15 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectAsCityDim",
-				"selectAsCityDim keyGenerate(output({Transaction Type Key} as long),",
+				"selectAsCityDim keyGenerate(output({City Key} as long),",
 				"     startAt: 1L,",
-				"     stepValue: 1L) ~> surrogateKeyPayKey",
-				"surrogateKeyPayKey sink(allowSchemaDrift: true,",
+				"     stepValue: 1L) ~> surrogateKeyCityKey",
+				"surrogateKeyCityKey sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     partitionFileNames:['Dimension_Payment Method.csv'],",
+				"     partitionFileNames:['Dimension_City.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> sinkPayDim"
+				"     partitionBy('hash', 1)) ~> sinkCityDim"
 			]
 		}
 	}
