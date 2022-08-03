@@ -25,7 +25,7 @@
 						"referenceName": "join_output_final",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "finalSink"
 				}
 			],
 			"transformations": [
@@ -122,10 +122,9 @@
 				"     broadcast: 'auto')~> join1",
 				"join1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     partitionFileNames:['finalIntegrationTable.csv'],",
+				"     filePattern:'final[n].csv',",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> sink1"
+				"     skipDuplicateMapOutputs: true) ~> finalSink"
 			]
 		}
 	}
