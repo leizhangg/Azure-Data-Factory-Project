@@ -1,5 +1,5 @@
 {
-	"name": "output_order_Dim",
+	"name": "output_Purchase_Dim",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "BlobStorageLinkedService",
