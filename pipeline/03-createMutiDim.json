@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "selectMultiDim",
+						"referenceName": "selectDimFact",
 						"type": "DataFlowReference"
 					},
 					"compute": {

@@ -1,5 +1,5 @@
 {
-	"name": "selectMultiDim",
+	"name": "selectDimFact",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -40,6 +40,9 @@
 				},
 				{
 					"name": "surrogateOrderKey"
+				},
+				{
+					"name": "select3"
 				}
 			],
 			"scriptLines": [
@@ -116,9 +119,10 @@
 				"          {Calendar Month Number} = month(OrderDate),",
 				"          {Calendar Year} = year(OrderDate),",
 				"          {ISO Week Number} = weekOfYear(OrderDate),",
-				"          Month = month(OrderDate)) ~> derivedColumn1",
+				"          Month = month(OrderDate),",
+				"          column1 = ERROR_FUNCTION('')) ~> derivedColumn1",
 				"derivedColumn1 select(mapColumn(",
-				"          Date,",
+				"          Date = OrderDate,",
 				"          Day,",
 				"          {Calendar Month Number},",
 				"          {Calendar Year},",
@@ -139,6 +143,20 @@
 				"select2 keyGenerate(output({Order Key} as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> surrogateOrderKey",
+				"integrationTableSource select(mapColumn(",
+				"          {Supplier ID} = SupplierID,",
+				"          {City ID} = DeliveryCityID,",
+				"          {Payment Method ID} = PaymentMethodID,",
+				"          Date = OrderDate,",
+				"          {Transaction Type ID} = SupplierTransactionID,",
+				"          OrderedOuters,",
+				"          ReceivedOuters,",
+				"          ExpectedUnitPricePerOuter,",
+				"          TransactionAmount,",
+				"          AmountExcludingTax",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
 				"select1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['Dimension_Date.csv'],",
