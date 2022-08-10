@@ -1,0 +1,53 @@
+{
+	"name": "DelimitedText1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "BlobStorageLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Dimension_Date.csv",
+				"folderPath": "DW",
+				"container": "container"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Date",
+				"type": "String"
+			},
+			{
+				"name": "Day",
+				"type": "String"
+			},
+			{
+				"name": "Calendar Month Number",
+				"type": "String"
+			},
+			{
+				"name": "Calendar Year",
+				"type": "String"
+			},
+			{
+				"name": "Day Number",
+				"type": "String"
+			},
+			{
+				"name": "ISO Week Number",
+				"type": "String"
+			},
+			{
+				"name": "Date Key",
+				"type": "String"
+			}
+		]
+	}
+}

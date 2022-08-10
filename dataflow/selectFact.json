@@ -9,23 +9,30 @@
 						"referenceName": "join_output_final",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "all"
 				},
 				{
 					"dataset": {
 						"referenceName": "city",
 						"type": "DatasetReference"
 					},
-					"name": "source2"
+					"name": "city"
 				},
 				{
-					"name": "source3"
+					"dataset": {
+						"referenceName": "DelimitedText1",
+						"type": "DatasetReference"
+					},
+					"name": "date"
 				}
 			],
 			"sinks": [],
 			"transformations": [
 				{
 					"name": "join1"
+				},
+				{
+					"name": "selectFact"
 				}
 			],
 			"scriptLines": [
@@ -96,7 +103,7 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> source1",
+				"     ignoreNoFilesFound: false) ~> all",
 				"source(output(",
 				"          {City ID} as string,",
 				"          City as string,",
@@ -107,14 +114,33 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> source2",
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> source3",
-				"source1, source2 join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
-				"     joinType:'inner',",
+				"     ignoreNoFilesFound: false) ~> city",
+				"source(output(",
+				"          Date as string,",
+				"          Day as string,",
+				"          {Calendar Month Number} as string,",
+				"          {Calendar Year} as string,",
+				"          {Day Number} as string,",
+				"          {ISO Week Number} as string,",
+				"          {Date Key} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> date",
+				"selectFact, city join(selectFact@{City ID} == city@{City ID},",
+				"     joinType:'outer',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> join1"
+				"     broadcast: 'auto')~> join1",
+				"all select(mapColumn(",
+				"          {Transaction Type ID} = TransactionTypeID,",
+				"          SupplierID,",
+				"          Date = OrderDate,",
+				"          {Payment Method ID} = PaymentMethodID,",
+				"          {City ID} = DeliveryCityID",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectFact"
 			]
 		}
 	}
