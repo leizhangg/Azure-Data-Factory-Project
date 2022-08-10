@@ -1,6 +1,9 @@
 {
 	"name": "dataflow_join_purchase",
 	"properties": {
+		"folder": {
+			"name": "_blob_storage"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
