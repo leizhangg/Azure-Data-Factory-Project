@@ -1,0 +1,121 @@
+{
+	"name": "selectFact",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "join_output_final",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "city",
+						"type": "DatasetReference"
+					},
+					"name": "source2"
+				},
+				{
+					"name": "source3"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "join1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          PurchaseOrderLineID as string,",
+				"          PurchaseOrderID as string,",
+				"          StockItemID as string,",
+				"          OrderedOuters as string,",
+				"          Description as string,",
+				"          ReceivedOuters as string,",
+				"          PackageTypeID as string,",
+				"          ExpectedUnitPricePerOuter as string,",
+				"          LastReceiptDate as string,",
+				"          IsOrderLineFinalized as string,",
+				"          LastEditedBy as string,",
+				"          LastEditedWhen as string,",
+				"          ingest_time as string,",
+				"          surrogateKeyPOL as string,",
+				"          SupplierID as string,",
+				"          OrderDate as string,",
+				"          DeliveryMethodID as string,",
+				"          ContactPersonID as string,",
+				"          ExpectedDeliveryDate as string,",
+				"          SupplierReference as string,",
+				"          IsOrderFinalized as string,",
+				"          Comments as string,",
+				"          InternalComments as string,",
+				"          surrogateKeyPO as string,",
+				"          SupplierName as string,",
+				"          SupplierCategoryID as string,",
+				"          PrimaryContactPersonID as string,",
+				"          AlternateContactPersonID as string,",
+				"          DeliveryCityID as string,",
+				"          PostalCityID as string,",
+				"          BankAccountName as string,",
+				"          BankAccountBranch as string,",
+				"          BankAccountCode as string,",
+				"          BankAccountNumber as string,",
+				"          BankInternationalCode as string,",
+				"          PaymentDays as string,",
+				"          PhoneNumber as string,",
+				"          FaxNumber as string,",
+				"          WebsiteURL as string,",
+				"          DeliveryAddressLine1 as string,",
+				"          DeliveryAddressLine2 as string,",
+				"          DeliveryPostalCode as string,",
+				"          DeliveryLocation as string,",
+				"          PostalAddressLine1 as string,",
+				"          PostalAddressLine2 as string,",
+				"          PostalPostalCode as string,",
+				"          ValidFrom as string,",
+				"          ValidTo as string,",
+				"          surrogate_key_supplier as string,",
+				"          SupplierCategoryName as string,",
+				"          surrogate_key_SC as string,",
+				"          SupplierTransactionID as string,",
+				"          TransactionTypeID as string,",
+				"          PaymentMethodID as string,",
+				"          SupplierInvoiceNumber as string,",
+				"          TransactionDate as string,",
+				"          AmountExcludingTax as string,",
+				"          TaxAmount as string,",
+				"          TransactionAmount as string,",
+				"          OutstandingBalance as string,",
+				"          FinalizationDate as string,",
+				"          IsFinalized as string,",
+				"          surrogate_key_ST as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source(output(",
+				"          {City ID} as string,",
+				"          City as string,",
+				"          Location as string,",
+				"          ValidFrom as string,",
+				"          ValidTo as string,",
+				"          {City Key} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source2",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false) ~> source3",
+				"source1, source2 join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1"
+			]
+		}
+	}
+}
