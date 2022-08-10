@@ -5,6 +5,17 @@
 			"referenceName": "SqlDatabaseLinkedService",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"table_name": {
+				"type": "string"
+			},
+			"schema_name": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "01_copyData_SQLServer"
+		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": [
