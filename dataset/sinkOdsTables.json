@@ -19,7 +19,8 @@
 					"value": "@dataset().file_name",
 					"type": "Expression"
 				},
-				"folderPath": "odsTables"
+				"folderPath": "ODS2",
+				"container": "container"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
