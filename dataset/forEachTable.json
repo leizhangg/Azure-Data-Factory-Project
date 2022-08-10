@@ -1,0 +1,16 @@
+{
+	"name": "forEachTable",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SqlDatabaseLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "Purchasing",
+			"table": "getTableList"
+		}
+	}
+}
