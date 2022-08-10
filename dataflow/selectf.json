@@ -18,12 +18,12 @@
 						"referenceName": "output_Trans_Dim",
 						"type": "DatasetReference"
 					},
-					"name": "sinkFact"
+					"name": "sinkTransaction"
 				}
 			],
 			"transformations": [
 				{
-					"name": "selectFact"
+					"name": "selectTransaction"
 				},
 				{
 					"name": "surrogateKeyTranKey"
@@ -108,8 +108,8 @@
 				"          ValidTo",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> selectFact",
-				"selectFact keyGenerate(output({Transaction Type Key} as long),",
+				"     skipDuplicateMapOutputs: true) ~> selectTransaction",
+				"selectTransaction keyGenerate(output({Transaction Type Key} as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> surrogateKeyTranKey",
 				"surrogateKeyTranKey sink(allowSchemaDrift: true,",
@@ -117,7 +117,7 @@
 				"     partitionFileNames:['Dimension_Transaction Type.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> sinkFact"
+				"     partitionBy('hash', 1)) ~> sinkTransaction"
 			]
 		}
 	}
