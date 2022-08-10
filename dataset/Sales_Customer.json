@@ -1,0 +1,149 @@
+{
+	"name": "Sales_Customer",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "BlobStorageLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Sales_Customer.csv",
+				"folderPath": "ODS2",
+				"container": "container"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "CustomerID",
+				"type": "String"
+			},
+			{
+				"name": "CustomerName",
+				"type": "String"
+			},
+			{
+				"name": "BillToCustomerID",
+				"type": "String"
+			},
+			{
+				"name": "CustomerCategoryID",
+				"type": "String"
+			},
+			{
+				"name": "BuyingGroupID",
+				"type": "String"
+			},
+			{
+				"name": "PrimaryContactPersonID",
+				"type": "String"
+			},
+			{
+				"name": "AlternateContactPersonID",
+				"type": "String"
+			},
+			{
+				"name": "DeliveryMethodID",
+				"type": "String"
+			},
+			{
+				"name": "DeliveryCityID",
+				"type": "String"
+			},
+			{
+				"name": "PostalCityID",
+				"type": "String"
+			},
+			{
+				"name": "CreditLimit",
+				"type": "String"
+			},
+			{
+				"name": "AccountOpenedDate",
+				"type": "String"
+			},
+			{
+				"name": "StandardDiscountPercentage",
+				"type": "String"
+			},
+			{
+				"name": "IsStatementSent",
+				"type": "String"
+			},
+			{
+				"name": "IsOnCreditHold",
+				"type": "String"
+			},
+			{
+				"name": "PaymentDays",
+				"type": "String"
+			},
+			{
+				"name": "PhoneNumber",
+				"type": "String"
+			},
+			{
+				"name": "FaxNumber",
+				"type": "String"
+			},
+			{
+				"name": "DeliveryRun",
+				"type": "String"
+			},
+			{
+				"name": "RunPosition",
+				"type": "String"
+			},
+			{
+				"name": "WebsiteURL",
+				"type": "String"
+			},
+			{
+				"name": "DeliveryAddressLine1",
+				"type": "String"
+			},
+			{
+				"name": "DeliveryAddressLine2",
+				"type": "String"
+			},
+			{
+				"name": "DeliveryPostalCode",
+				"type": "String"
+			},
+			{
+				"name": "DeliveryLocation",
+				"type": "String"
+			},
+			{
+				"name": "PostalAddressLine1",
+				"type": "String"
+			},
+			{
+				"name": "PostalAddressLine2",
+				"type": "String"
+			},
+			{
+				"name": "PostalPostalCode",
+				"type": "String"
+			},
+			{
+				"name": "LastEditedBy",
+				"type": "String"
+			},
+			{
+				"name": "ValidFrom",
+				"type": "String"
+			},
+			{
+				"name": "ValidTo",
+				"type": "String"
+			}
+		]
+	}
+}

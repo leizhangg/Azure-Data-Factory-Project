@@ -1,0 +1,203 @@
+{
+	"name": "dataflow_customer",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Sales_Customer",
+						"type": "DatasetReference"
+					},
+					"name": "salesCustomer"
+				},
+				{
+					"dataset": {
+						"referenceName": "Sales_CustomerCategories",
+						"type": "DatasetReference"
+					},
+					"name": "salesCategory"
+				},
+				{
+					"dataset": {
+						"referenceName": "Application_People",
+						"type": "DatasetReference"
+					},
+					"name": "ApplicationPeople"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "IngegrationCustomerStaging",
+						"type": "DatasetReference"
+					},
+					"name": "sinkIntegrationCustomer"
+				}
+			],
+			"transformations": [
+				{
+					"name": "selectSalesCustomer"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "selectSalesCategory"
+				},
+				{
+					"name": "selectApplicationPeople"
+				},
+				{
+					"name": "join2"
+				},
+				{
+					"name": "CustomerStagingKey"
+				},
+				{
+					"name": "selectCustomer"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CustomerID as integer,",
+				"          CustomerName as string,",
+				"          BillToCustomerID as integer,",
+				"          CustomerCategoryID as integer,",
+				"          BuyingGroupID as integer,",
+				"          PrimaryContactPersonID as integer,",
+				"          AlternateContactPersonID as integer,",
+				"          DeliveryMethodID as integer,",
+				"          DeliveryCityID as integer,",
+				"          PostalCityID as integer,",
+				"          CreditLimit as string,",
+				"          AccountOpenedDate as date,",
+				"          StandardDiscountPercentage as float,",
+				"          IsStatementSent as boolean,",
+				"          IsOnCreditHold as boolean,",
+				"          PaymentDays as integer,",
+				"          PhoneNumber as string,",
+				"          FaxNumber as string,",
+				"          DeliveryRun as string,",
+				"          RunPosition as string,",
+				"          WebsiteURL as string,",
+				"          DeliveryAddressLine1 as string,",
+				"          DeliveryAddressLine2 as string,",
+				"          DeliveryPostalCode as string,",
+				"          DeliveryLocation as string,",
+				"          PostalAddressLine1 as string,",
+				"          PostalAddressLine2 as string,",
+				"          PostalPostalCode as string,",
+				"          LastEditedBy as string,",
+				"          ValidFrom as timestamp,",
+				"          ValidTo as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> salesCustomer",
+				"source(output(",
+				"          CustomerCategoryID as integer,",
+				"          CustomerCategoryName as string,",
+				"          LastEditedBy as string,",
+				"          ValidFrom as timestamp,",
+				"          ValidTo as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> salesCategory",
+				"source(output(",
+				"          PersonID as string,",
+				"          FullName as string,",
+				"          PreferredName as string,",
+				"          SearchName as string,",
+				"          IsPermittedToLogon as string,",
+				"          LogonName as string,",
+				"          IsExternalLogonProvider as string,",
+				"          HashedPassword as string,",
+				"          IsSystemUser as string,",
+				"          IsEmployee as string,",
+				"          IsSalesperson as string,",
+				"          UserPreferences as string,",
+				"          PhoneNumber as string,",
+				"          FaxNumber as string,",
+				"          EmailAddress as string,",
+				"          Photo as string,",
+				"          CustomFields as string,",
+				"          OtherLanguages as string,",
+				"          LastEditedBy as string,",
+				"          ValidFrom as string,",
+				"          ValidTo as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> ApplicationPeople",
+				"salesCustomer select(mapColumn(",
+				"          CustomerID,",
+				"          CustomerName,",
+				"          BillToCustomerID,",
+				"          CustomerCategoryID,",
+				"          BuyingGroupID,",
+				"          PrimaryContactPersonID,",
+				"          AlternateContactPersonID,",
+				"          DeliveryCityID,",
+				"          PostalCityID,",
+				"          DeliveryAddressLine1,",
+				"          DeliveryPostalCode,",
+				"          ValidFrom,",
+				"          ValidTo",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectSalesCustomer",
+				"selectSalesCustomer, selectSalesCategory join(selectSalesCustomer@CustomerCategoryID == selectSalesCategory@CustomerCategoryID,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"salesCategory select(mapColumn(",
+				"          CustomerCategoryID,",
+				"          CustomerCategoryName",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectSalesCategory",
+				"ApplicationPeople select(mapColumn(",
+				"          PersonID,",
+				"          FullName",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectApplicationPeople",
+				"join1, selectApplicationPeople join(PrimaryContactPersonID == PersonID,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join2",
+				"join2 keyGenerate(output({Customer Staging Key} as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> CustomerStagingKey",
+				"CustomerStagingKey select(mapColumn(",
+				"          {Customer Staging Key},",
+				"          {WWI Customer ID} = CustomerID,",
+				"          Customer = CustomerName,",
+				"          BillToCustomerID,",
+				"          Category = CustomerCategoryName,",
+				"          {Buying Group} = BuyingGroupID,",
+				"          {Primary Contact} = FullName,",
+				"          {Postal Code} = PostalCityID,",
+				"          ValidFrom,",
+				"          ValidTo",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCustomer",
+				"selectCustomer sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sinkIntegrationCustomer"
+			]
+		}
+	}
+}

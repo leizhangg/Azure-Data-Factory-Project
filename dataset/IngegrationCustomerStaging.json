@@ -1,0 +1,16 @@
+{
+	"name": "IngegrationCustomerStaging",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sqlDWlinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "Integration",
+			"table": "Customer_Staging"
+		}
+	}
+}
