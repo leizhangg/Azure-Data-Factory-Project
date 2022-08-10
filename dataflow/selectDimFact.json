@@ -42,9 +42,6 @@
 					"name": "surrogateOrderKey"
 				},
 				{
-					"name": "select3"
-				},
-				{
 					"name": "surrogateKey1"
 				}
 			],
@@ -146,29 +143,6 @@
 				"select2 keyGenerate(output({Order Key} as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> surrogateOrderKey",
-				"integrationTableSource select(mapColumn(",
-				"          {Supplier ID} = SupplierID,",
-				"          {City ID} = DeliveryCityID,",
-				"          {Payment Method ID} = PaymentMethodID,",
-				"          Date = OrderDate,",
-				"          {Transaction Type ID} = SupplierTransactionID,",
-				"          OrderedOuters,",
-				"          ReceivedOuters,",
-				"          ExpectedUnitPricePerOuter,",
-				"          TransactionAmount,",
-				"          AmountExcludingTax,",
-				"          TaxAmount,",
-				"          OutstandingBalance,",
-				"          IsOrderLineFinalized,",
-				"          IsOrderFinalized,",
-				"          IsFinalized,",
-				"          surrogateKeyPOL,",
-				"          surrogateKeyPO,",
-				"          surrogate_key_supplier,",
-				"          surrogate_key_SC",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select3",
 				"select1 keyGenerate(output({Date Key} as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> surrogateKey1",
