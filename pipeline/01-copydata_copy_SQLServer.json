@@ -102,6 +102,10 @@
 										"table_name": {
 											"value": "@item().table_name",
 											"type": "Expression"
+										},
+										"schema_name": {
+											"value": "@item().table_schema",
+											"type": "Expression"
 										}
 									}
 								}
