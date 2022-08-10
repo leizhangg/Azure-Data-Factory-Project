@@ -113,7 +113,10 @@
 							"outputs": [
 								{
 									"referenceName": "forEachOutput",
-									"type": "DatasetReference"
+									"type": "DatasetReference",
+									"parameters": {
+										"file_name": "@concat(item().table_schema,'_',item().table_name,'.csv')"
+									}
 								}
 							]
 						}
