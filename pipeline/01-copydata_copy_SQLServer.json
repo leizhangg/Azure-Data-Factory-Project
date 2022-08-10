@@ -45,9 +45,10 @@
 						"value": "@activity('getTableList').output.value",
 						"type": "Expression"
 					},
+					"isSequential": true,
 					"activities": [
 						{
-							"name": "exportTable",
+							"name": "CopyDataToBlob",
 							"type": "Copy",
 							"dependsOn": [],
 							"policy": {
@@ -61,62 +62,15 @@
 							"typeProperties": {
 								"source": {
 									"type": "AzureSqlSource",
-									"additionalColumns": [
-										{
-											"name": "ingest_time",
-											"value": {
-												"value": "@utcnow()",
-												"type": "Expression"
-											}
-										}
-									],
 									"queryTimeout": "02:00:00",
 									"partitionOption": "None"
 								},
-								"sink": {
-									"type": "DelimitedTextSink",
-									"storeSettings": {
-										"type": "AzureBlobStorageWriteSettings"
-									},
-									"formatSettings": {
-										"type": "DelimitedTextWriteSettings",
-										"quoteAllText": true,
-										"fileExtension": ".txt"
-									}
-								},
-								"enableStaging": false,
-								"translator": {
-									"type": "TabularTranslator",
-									"typeConversion": true,
-									"typeConversionSettings": {
-										"allowDataTruncation": true,
-										"treatBooleanAsNumber": false
-									}
-								}
+								"enableStaging": false
 							},
 							"inputs": [
 								{
-									"referenceName": "forEachTable",
-									"type": "DatasetReference",
-									"parameters": {
-										"table_name": {
-											"value": "@item().table_name",
-											"type": "Expression"
-										},
-										"schema_name": {
-											"value": "@item().table_schema",
-											"type": "Expression"
-										}
-									}
-								}
-							],
-							"outputs": [
-								{
-									"referenceName": "forEachOutput",
-									"type": "DatasetReference",
-									"parameters": {
-										"file_name": "@concat(item().table_schema,'_',item().table_name,'.csv')"
-									}
+									"referenceName": "sourceTable",
+									"type": "DatasetReference"
 								}
 							]
 						}
