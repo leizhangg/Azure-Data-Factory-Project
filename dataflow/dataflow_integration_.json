@@ -40,7 +40,25 @@
 					"name": "sourcePaymentMethod"
 				},
 				{
-					"name": "source1"
+					"dataset": {
+						"referenceName": "source_warehouse_stockitem",
+						"type": "DatasetReference"
+					},
+					"name": "sourceWarehouseStockitem"
+				},
+				{
+					"dataset": {
+						"referenceName": "source_warehouse_colors",
+						"type": "DatasetReference"
+					},
+					"name": "sourceWarehouseColors"
+				},
+				{
+					"dataset": {
+						"referenceName": "source_warehouse_packageType",
+						"type": "DatasetReference"
+					},
+					"name": "sourceWarehousePackageType"
 				}
 			],
 			"sinks": [
@@ -102,6 +120,18 @@
 				},
 				{
 					"name": "CityStaingKey"
+				},
+				{
+					"name": "joinStockBuyingPackage"
+				},
+				{
+					"name": "joinColor"
+				},
+				{
+					"name": "select6"
+				},
+				{
+					"name": "select7"
 				}
 			],
 			"scriptLines": [
@@ -192,8 +222,59 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> sourcePaymentMethod",
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> source1",
+				"source(output(",
+				"          StockItemID as integer,",
+				"          StockItemName as string,",
+				"          SupplierID as integer,",
+				"          ColorID as integer,",
+				"          UnitPackageID as integer,",
+				"          OuterPackageID as integer,",
+				"          Brand as string,",
+				"          Size as string,",
+				"          LeadTimeDays as integer,",
+				"          QuantityPerOuter as integer,",
+				"          IsChillerStock as boolean,",
+				"          Barcode as string,",
+				"          TaxRate as decimal(18,3),",
+				"          UnitPrice as decimal(18,2),",
+				"          RecommendedRetailPrice as decimal(18,2),",
+				"          TypicalWeightPerUnit as decimal(18,3),",
+				"          MarketingComments as string,",
+				"          InternalComments as string,",
+				"          Photo as binary,",
+				"          CustomFields as string,",
+				"          Tags as string,",
+				"          SearchDetails as string,",
+				"          LastEditedBy as integer,",
+				"          ValidFrom as timestamp,",
+				"          ValidTo as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> sourceWarehouseStockitem",
+				"source(output(",
+				"          ColorID as integer,",
+				"          ColorName as string,",
+				"          LastEditedBy as integer,",
+				"          ValidFrom as timestamp,",
+				"          ValidTo as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> sourceWarehouseColors",
+				"source(output(",
+				"          PackageTypeID as integer,",
+				"          PackageTypeName as string,",
+				"          LastEditedBy as integer,",
+				"          ValidFrom as timestamp,",
+				"          ValidTo as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> sourceWarehousePackageType",
 				"sourceApplicationCity select(mapColumn(",
 				"          CityID,",
 				"          CityName,",
@@ -281,6 +362,44 @@
 				"select1 keyGenerate(output({City Staing Key} as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> CityStaingKey",
+				"sourceWarehouseStockitem, sourceWarehousePackageType join(UnitPackageID == PackageTypeID,",
+				"     joinType:'outer',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinStockBuyingPackage",
+				"sourceWarehouseStockitem, sourceWarehouseColors join(sourceWarehouseStockitem@ColorID == sourceWarehouseColors@ColorID,",
+				"     joinType:'outer',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinColor",
+				"joinColor select(mapColumn(",
+				"          StockItemID,",
+				"          StockItemName,",
+				"          ColorName,",
+				"          Brand,",
+				"          Size,",
+				"          LeadTimeDays,",
+				"          QuantityPerOuter,",
+				"          IsChillerStock,",
+				"          Barcode,",
+				"          TaxRate,",
+				"          UnitPrice,",
+				"          RecommendedRetailPrice,",
+				"          TypicalWeightPerUnit,",
+				"          Photo,",
+				"          ValidFrom = sourceWarehouseStockitem@ValidFrom,",
+				"          ValidTo = sourceWarehouseStockitem@ValidTo",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select6",
+				"joinStockBuyingPackage select(mapColumn(",
+				"          StockItemID,",
+				"          UnitPackageID,",
+				"          OuterPackageID,",
+				"          {Buying Package} = PackageTypeName",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select7",
 				"CityStaingKey sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
