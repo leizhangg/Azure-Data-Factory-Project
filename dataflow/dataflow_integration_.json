@@ -59,6 +59,27 @@
 						"type": "DatasetReference"
 					},
 					"name": "sourceWarehousePackageType"
+				},
+				{
+					"dataset": {
+						"referenceName": "SourcePurchasingSuppliers",
+						"type": "DatasetReference"
+					},
+					"name": "sourcePurchasingSuppliers"
+				},
+				{
+					"dataset": {
+						"referenceName": "SourceSupplierCategories",
+						"type": "DatasetReference"
+					},
+					"name": "SourceSupplierCategories"
+				},
+				{
+					"dataset": {
+						"referenceName": "sourceApplicationPeople",
+						"type": "DatasetReference"
+					},
+					"name": "sourceApplicationPeople"
 				}
 			],
 			"sinks": [
@@ -89,6 +110,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "sinkStockItemStaging"
+				},
+				{
+					"dataset": {
+						"referenceName": "IntegrationSupplierStaging",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
 				}
 			],
 			"transformations": [
@@ -151,6 +179,30 @@
 				},
 				{
 					"name": "StockItemStagingKey"
+				},
+				{
+					"name": "select8"
+				},
+				{
+					"name": "selectSupplierCate"
+				},
+				{
+					"name": "join4"
+				},
+				{
+					"name": "selectPersonName"
+				},
+				{
+					"name": "join5"
+				},
+				{
+					"name": "select9"
+				},
+				{
+					"name": "select10"
+				},
+				{
+					"name": "SupplierStagingKey"
 				}
 			],
 			"scriptLines": [
@@ -294,6 +346,79 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> sourceWarehousePackageType",
+				"source(output(",
+				"          SupplierID as integer,",
+				"          SupplierName as string,",
+				"          SupplierCategoryID as integer,",
+				"          PrimaryContactPersonID as integer,",
+				"          AlternateContactPersonID as integer,",
+				"          DeliveryMethodID as integer,",
+				"          DeliveryCityID as integer,",
+				"          PostalCityID as integer,",
+				"          SupplierReference as string,",
+				"          BankAccountName as string,",
+				"          BankAccountBranch as string,",
+				"          BankAccountCode as string,",
+				"          BankAccountNumber as string,",
+				"          BankInternationalCode as string,",
+				"          PaymentDays as integer,",
+				"          InternalComments as string,",
+				"          PhoneNumber as string,",
+				"          FaxNumber as string,",
+				"          WebsiteURL as string,",
+				"          DeliveryAddressLine1 as string,",
+				"          DeliveryAddressLine2 as string,",
+				"          DeliveryPostalCode as string,",
+				"          DeliveryLocation as binary,",
+				"          PostalAddressLine1 as string,",
+				"          PostalAddressLine2 as string,",
+				"          PostalPostalCode as string,",
+				"          LastEditedBy as integer,",
+				"          ValidFrom as timestamp,",
+				"          ValidTo as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> sourcePurchasingSuppliers",
+				"source(output(",
+				"          SupplierCategoryID as integer,",
+				"          SupplierCategoryName as string,",
+				"          LastEditedBy as integer,",
+				"          ValidFrom as timestamp,",
+				"          ValidTo as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SourceSupplierCategories",
+				"source(output(",
+				"          PersonID as integer,",
+				"          FullName as string,",
+				"          PreferredName as string,",
+				"          SearchName as string,",
+				"          IsPermittedToLogon as boolean,",
+				"          LogonName as string,",
+				"          IsExternalLogonProvider as boolean,",
+				"          HashedPassword as binary,",
+				"          IsSystemUser as boolean,",
+				"          IsEmployee as boolean,",
+				"          IsSalesperson as boolean,",
+				"          UserPreferences as string,",
+				"          PhoneNumber as string,",
+				"          FaxNumber as string,",
+				"          EmailAddress as string,",
+				"          Photo as binary,",
+				"          CustomFields as string,",
+				"          OtherLanguages as string,",
+				"          LastEditedBy as integer,",
+				"          ValidFrom as timestamp,",
+				"          ValidTo as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> sourceApplicationPeople",
 				"sourceApplicationCity select(mapColumn(",
 				"          CityID,",
 				"          CityName,",
@@ -436,9 +561,82 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join3",
-				"join3 keyGenerate(output({Stock Item Staging Key} as long),",
+				"select8 keyGenerate(output({Stock Item Staging Key} as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> StockItemStagingKey",
+				"join3 select(mapColumn(",
+				"          StockItemID = select6@StockItemID,",
+				"          StockItemName,",
+				"          ColorName,",
+				"          Brand,",
+				"          Size,",
+				"          LeadTimeDays,",
+				"          QuantityPerOuter,",
+				"          IsChillerStock,",
+				"          Barcode,",
+				"          TaxRate,",
+				"          UnitPrice,",
+				"          RecommendedRetailPrice,",
+				"          TypicalWeightPerUnit,",
+				"          Photo,",
+				"          ValidFrom,",
+				"          ValidTo,",
+				"          {Buying Package},",
+				"          {Selling Package}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select8",
+				"SourceSupplierCategories select(mapColumn(",
+				"          SupplierCategoryID,",
+				"          SupplierCategoryName",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectSupplierCate",
+				"select9, selectSupplierCate join(select9@SupplierCategoryID == selectSupplierCate@SupplierCategoryID,",
+				"     joinType:'outer',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join4",
+				"sourceApplicationPeople select(mapColumn(",
+				"          PersonID,",
+				"          FullName",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectPersonName",
+				"join4, selectPersonName join(PrimaryContactPersonID == PersonID,",
+				"     joinType:'outer',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join5",
+				"sourcePurchasingSuppliers select(mapColumn(",
+				"          SupplierID,",
+				"          SupplierName,",
+				"          SupplierCategoryID,",
+				"          PrimaryContactPersonID,",
+				"          SupplierReference,",
+				"          PaymentDays,",
+				"          PostalPostalCode,",
+				"          ValidFrom,",
+				"          ValidTo",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select9",
+				"join5 select(mapColumn(",
+				"          SupplierID,",
+				"          SupplierName,",
+				"          Category = SupplierCategoryName,",
+				"          {Primary Contact} = FullName,",
+				"          SupplierReference,",
+				"          PaymentDays,",
+				"          PostalPostalCode,",
+				"          ValidFrom,",
+				"          ValidTo",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select10",
+				"select10 keyGenerate(output({Supplier Staging Key} as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> SupplierStagingKey",
 				"CityStaingKey sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -568,7 +766,7 @@
 				"     errorHandlingOption: 'stopOnFirstError',",
 				"     mapColumn(",
 				"          {Stock Item Staging Key},",
-				"          {WWI Stock Item ID} = select6@StockItemID,",
+				"          {WWI Stock Item ID} = StockItemID,",
 				"          {Stock Item} = StockItemName,",
 				"          Color = ColorName,",
 				"          {Selling Package},",
@@ -586,7 +784,29 @@
 				"          Photo,",
 				"          {Valid From} = ValidFrom,",
 				"          {Valid To} = ValidTo",
-				"     )) ~> sinkStockItemStaging"
+				"     )) ~> sinkStockItemStaging",
+				"SupplierStagingKey sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          {Supplier Staging Key} as integer,",
+				"          {WWI Supplier ID} as integer,",
+				"          Supplier as string,",
+				"          Category as string,",
+				"          {Primary Contact} as string,",
+				"          {Supplier Reference} as string,",
+				"          {Payment Days} as integer,",
+				"          {Postal Code} as string,",
+				"          {Valid From} as timestamp,",
+				"          {Valid To} as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
 			]
 		}
 	}
