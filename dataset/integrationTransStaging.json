@@ -1,0 +1,41 @@
+{
+	"name": "integrationTransStaging",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sqlDWlinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Transaction Type Staging Key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "WWI Transaction Type ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Transaction Type",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Valid From",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "Valid To",
+				"type": "datetime2",
+				"scale": 7
+			}
+		],
+		"typeProperties": {
+			"schema": "Integration",
+			"table": "TransactionType_Staging"
+		}
+	}
+}
