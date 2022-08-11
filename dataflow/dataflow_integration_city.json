@@ -1,0 +1,214 @@
+{
+	"name": "dataflow_integration_city",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "source_application_city",
+						"type": "DatasetReference"
+					},
+					"name": "sourceApplicationCity"
+				},
+				{
+					"dataset": {
+						"referenceName": "source_application_state",
+						"type": "DatasetReference"
+					},
+					"name": "sourceApplicationState"
+				},
+				{
+					"dataset": {
+						"referenceName": "source_application_countries",
+						"type": "DatasetReference"
+					},
+					"name": "sourceApplicationCountry"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "integrationCityStaging",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "selectCity"
+				},
+				{
+					"name": "selectState"
+				},
+				{
+					"name": "selectCountry"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "join2"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "CityStagingKey"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CityID as integer,",
+				"          CityName as string,",
+				"          StateProvinceID as integer,",
+				"          Location as binary,",
+				"          LatestRecordedPopulation as long,",
+				"          LastEditedBy as integer,",
+				"          ValidFrom as timestamp,",
+				"          ValidTo as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> sourceApplicationCity",
+				"source(output(",
+				"          StateProvinceID as integer,",
+				"          StateProvinceCode as string,",
+				"          StateProvinceName as string,",
+				"          CountryID as integer,",
+				"          SalesTerritory as string,",
+				"          Border as binary,",
+				"          LatestRecordedPopulation as long,",
+				"          LastEditedBy as integer,",
+				"          ValidFrom as timestamp,",
+				"          ValidTo as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> sourceApplicationState",
+				"source(output(",
+				"          CountryID as integer,",
+				"          CountryName as string,",
+				"          FormalName as string,",
+				"          IsoAlpha3Code as string,",
+				"          IsoNumericCode as integer,",
+				"          CountryType as string,",
+				"          LatestRecordedPopulation as long,",
+				"          Continent as string,",
+				"          Region as string,",
+				"          Subregion as string,",
+				"          Border as binary,",
+				"          LastEditedBy as integer,",
+				"          ValidFrom as timestamp,",
+				"          ValidTo as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> sourceApplicationCountry",
+				"sourceApplicationCity select(mapColumn(",
+				"          CityID,",
+				"          CityName,",
+				"          StateProvinceID,",
+				"          Location,",
+				"          LatestRecordedPopulation,",
+				"          ValidFrom,",
+				"          ValidTo",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCity",
+				"sourceApplicationState select(mapColumn(",
+				"          StateProvinceID,",
+				"          StateProvince = StateProvinceName,",
+				"          CountryID,",
+				"          SalesTerritory",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectState",
+				"sourceApplicationCountry select(mapColumn(",
+				"          CountryID,",
+				"          CountryName,",
+				"          CountryType,",
+				"          Continent,",
+				"          Region,",
+				"          Subregion",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCountry",
+				"selectCity, selectState join(selectCity@StateProvinceID == selectState@StateProvinceID,",
+				"     joinType:'outer',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1, selectCountry join(selectState@CountryID == selectCountry@CountryID,",
+				"     joinType:'outer',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join2",
+				"CityStagingKey select(mapColumn(",
+				"          {City Staging Key},",
+				"          {WWI City ID} = CityID,",
+				"          City = CityName,",
+				"          {State Province} = StateProvince,",
+				"          Country = CountryName,",
+				"          Continent,",
+				"          SalesTerritory,",
+				"          Region,",
+				"          Subregion,",
+				"          Location,",
+				"          {Latest Recorded Population} = LatestRecordedPopulation,",
+				"          ValidFrom,",
+				"          ValidTo",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"join2 keyGenerate(output({City Staging Key} as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> CityStagingKey",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          {City Staging Key} as integer,",
+				"          {WWI City ID} as integer,",
+				"          City as string,",
+				"          {State Province} as string,",
+				"          Country as string,",
+				"          Continent as string,",
+				"          {Sales Territory} as string,",
+				"          Region as string,",
+				"          Subregion as string,",
+				"          Location as binary,",
+				"          {Latest Recorded Population} as long,",
+				"          {Valid From} as timestamp,",
+				"          {Valid To} as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          {City Staging Key},",
+				"          {WWI City ID},",
+				"          City,",
+				"          {State Province},",
+				"          Country,",
+				"          Continent,",
+				"          {Sales Territory} = SalesTerritory,",
+				"          Region,",
+				"          Subregion,",
+				"          Location,",
+				"          {Latest Recorded Population},",
+				"          {Valid From} = ValidFrom,",
+				"          {Valid To} = ValidTo",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}
