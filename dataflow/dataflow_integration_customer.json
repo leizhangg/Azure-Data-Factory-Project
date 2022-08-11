@@ -1,5 +1,5 @@
 {
-	"name": "dataflow_customer",
+	"name": "dataflow_integration_customer",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
