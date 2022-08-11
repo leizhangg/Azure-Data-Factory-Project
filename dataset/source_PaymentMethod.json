@@ -1,5 +1,5 @@
 {
-	"name": "IntegrationPaymentMethod",
+	"name": "source_PaymentMethod",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "BlobStorageLinkedService",
