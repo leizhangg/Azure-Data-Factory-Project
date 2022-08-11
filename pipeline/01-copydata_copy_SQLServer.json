@@ -96,7 +96,7 @@
 							],
 							"outputs": [
 								{
-									"referenceName": "sinkOdsTables",
+									"referenceName": "sinkODS",
 									"type": "DatasetReference",
 									"parameters": {
 										"file_name": {
