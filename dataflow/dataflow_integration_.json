@@ -1,5 +1,5 @@
 {
-	"name": "dataflow_integration_city",
+	"name": "dataflow_integration_",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -24,6 +24,20 @@
 						"type": "DatasetReference"
 					},
 					"name": "sourceApplicationCountry"
+				},
+				{
+					"dataset": {
+						"referenceName": "applicationEmployee",
+						"type": "DatasetReference"
+					},
+					"name": "applicationPeople"
+				},
+				{
+					"dataset": {
+						"referenceName": "IntegrationPaymentMethod",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
 				}
 			],
 			"sinks": [
@@ -32,7 +46,14 @@
 						"referenceName": "integrationCityStaging",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "sinkToCityStaging"
+				},
+				{
+					"dataset": {
+						"referenceName": "IntegrationEmployeeStaging",
+						"type": "DatasetReference"
+					},
+					"name": "sinkToEmployeeStaging"
 				}
 			],
 			"transformations": [
@@ -56,6 +77,15 @@
 				},
 				{
 					"name": "CityStagingKey"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "EmployeeStagingKey"
+				},
+				{
+					"name": "filterEmployee"
 				}
 			],
 			"scriptLines": [
@@ -109,6 +139,43 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> sourceApplicationCountry",
+				"source(output(",
+				"          PersonID as integer,",
+				"          FullName as string,",
+				"          PreferredName as string,",
+				"          SearchName as string,",
+				"          IsPermittedToLogon as boolean,",
+				"          LogonName as string,",
+				"          IsExternalLogonProvider as boolean,",
+				"          HashedPassword as binary,",
+				"          IsSystemUser as boolean,",
+				"          IsEmployee as boolean,",
+				"          IsSalesperson as boolean,",
+				"          UserPreferences as string,",
+				"          PhoneNumber as string,",
+				"          FaxNumber as string,",
+				"          EmailAddress as string,",
+				"          Photo as binary,",
+				"          CustomFields as string,",
+				"          OtherLanguages as string,",
+				"          LastEditedBy as integer,",
+				"          ValidFrom as timestamp,",
+				"          ValidTo as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> applicationPeople",
+				"source(output(",
+				"          PaymentMethodID as integer,",
+				"          PaymentMethodName as string,",
+				"          LastEditedBy as integer,",
+				"          {Valid From} as timestamp,",
+				"          {Valid To} as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
 				"sourceApplicationCity select(mapColumn(",
 				"          CityID,",
 				"          CityName,",
@@ -168,6 +235,23 @@
 				"join2 keyGenerate(output({City Staging Key} as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> CityStagingKey",
+				"EmployeeStagingKey select(mapColumn(",
+				"          {Employee Staging Key},",
+				"          {WWI Employee ID} = PersonID,",
+				"          Employee = FullName,",
+				"          {Preferred Name} = PreferredName,",
+				"          IsEmployee,",
+				"          IsSalesperson,",
+				"          Photo,",
+				"          ValidFrom,",
+				"          ValidTo",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"filterEmployee keyGenerate(output({Employee Staging Key} as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> EmployeeStagingKey",
+				"applicationPeople filter(IsEmployee==true()) ~> filterEmployee",
 				"select1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -207,7 +291,39 @@
 				"          {Latest Recorded Population},",
 				"          {Valid From} = ValidFrom,",
 				"          {Valid To} = ValidTo",
-				"     )) ~> sink1"
+				"     )) ~> sinkToCityStaging",
+				"select2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          {Employee Staging Key} as integer,",
+				"          {WWI Employee ID} as integer,",
+				"          Employee as string,",
+				"          {Preferred Name} as string,",
+				"          {Is Salesperson} as boolean,",
+				"          Photo as binary,",
+				"          {Valid From} as timestamp,",
+				"          {Valid To} as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'allErrors',",
+				"     transactionCommit: 'single',",
+				"     reportSuccessOnError: false,",
+				"     mapColumn(",
+				"          {Employee Staging Key},",
+				"          {WWI Employee ID},",
+				"          Employee,",
+				"          {Preferred Name},",
+				"          {Is Salesperson} = IsSalesperson,",
+				"          Photo,",
+				"          {Valid From} = ValidFrom,",
+				"          {Valid To} = ValidTo",
+				"     )) ~> sinkToEmployeeStaging"
 			]
 		}
 	}
