@@ -52,10 +52,10 @@
 					"name": "join2"
 				},
 				{
-					"name": "CustomerStagingKey"
+					"name": "selectCustomer"
 				},
 				{
-					"name": "selectCustomer"
+					"name": "CustomerStagingKey"
 				}
 			],
 			"scriptLines": [
@@ -64,7 +64,7 @@
 				"          CustomerName as string,",
 				"          BillToCustomerID as integer,",
 				"          CustomerCategoryID as integer,",
-				"          BuyingGroupID as integer,",
+				"          BuyingGroupID as string,",
 				"          PrimaryContactPersonID as integer,",
 				"          AlternateContactPersonID as integer,",
 				"          DeliveryMethodID as integer,",
@@ -106,7 +106,7 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> salesCategory",
 				"source(output(",
-				"          PersonID as string,",
+				"          PersonID as integer,",
 				"          FullName as string,",
 				"          PreferredName as string,",
 				"          SearchName as string,",
@@ -170,11 +170,7 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join2",
-				"join2 keyGenerate(output({Customer Staging Key} as long),",
-				"     startAt: 1L,",
-				"     stepValue: 1L) ~> CustomerStagingKey",
-				"CustomerStagingKey select(mapColumn(",
-				"          {Customer Staging Key},",
+				"join2 select(mapColumn(",
 				"          {WWI Customer ID} = CustomerID,",
 				"          Customer = CustomerName,",
 				"          BillToCustomerID,",
@@ -187,12 +183,16 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectCustomer",
-				"selectCustomer sink(allowSchemaDrift: true,",
+				"selectCustomer keyGenerate(output({Customer Staging Key} as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> CustomerStagingKey",
+				"CustomerStagingKey sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
 				"     updateable:false,",
 				"     upsertable:false,",
+				"     recreate:true,",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
