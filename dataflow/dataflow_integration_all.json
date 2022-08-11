@@ -1,7 +1,7 @@
 {
 	"name": "dataflow_integration_all",
 	"properties": {
-		"description": "Integration staging: employee, paymentMethod, stockitem, supplier, trans types ",
+		"description": "Integration staging: employee, paymentMethod, stockitem, supplier, trans types， city",
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
@@ -124,7 +124,7 @@
 						"referenceName": "IntegrationSupplierStaging",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "sinkSupplierStaging"
 				},
 				{
 					"dataset": {
@@ -702,6 +702,7 @@
 				"     insertable:true,",
 				"     updateable:false,",
 				"     upsertable:false,",
+				"     recreate:true,",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
@@ -854,7 +855,7 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> sink1",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sinkSupplierStaging",
 				"select11 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
