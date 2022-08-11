@@ -34,9 +34,12 @@
 				},
 				{
 					"dataset": {
-						"referenceName": "IntegrationPaymentMethod",
+						"referenceName": "source_PaymentMethod",
 						"type": "DatasetReference"
 					},
+					"name": "sourcePaymentMethod"
+				},
+				{
 					"name": "source1"
 				}
 			],
@@ -54,6 +57,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "sinkToEmployeeStaging"
+				},
+				{
+					"dataset": {
+						"referenceName": "IntegrationPaymentMethodStaging",
+						"type": "DatasetReference"
+					},
+					"name": "sinkIntegrationPaymentMethod"
 				}
 			],
 			"transformations": [
@@ -76,9 +86,6 @@
 					"name": "select1"
 				},
 				{
-					"name": "CityStagingKey"
-				},
-				{
 					"name": "select2"
 				},
 				{
@@ -86,6 +93,15 @@
 				},
 				{
 					"name": "filterEmployee"
+				},
+				{
+					"name": "PaymentMethodStagingKey"
+				},
+				{
+					"name": "select3"
+				},
+				{
+					"name": "CityStaingKey"
 				}
 			],
 			"scriptLines": [
@@ -175,7 +191,9 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> source1",
+				"     ignoreNoFilesFound: false) ~> sourcePaymentMethod",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false) ~> source1",
 				"sourceApplicationCity select(mapColumn(",
 				"          CityID,",
 				"          CityName,",
@@ -215,8 +233,7 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join2",
-				"CityStagingKey select(mapColumn(",
-				"          {City Staging Key},",
+				"join2 select(mapColumn(",
 				"          {WWI City ID} = CityID,",
 				"          City = CityName,",
 				"          {State Province} = StateProvince,",
@@ -232,9 +249,6 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"join2 keyGenerate(output({City Staging Key} as long),",
-				"     startAt: 1L,",
-				"     stepValue: 1L) ~> CityStagingKey",
 				"EmployeeStagingKey select(mapColumn(",
 				"          {Employee Staging Key},",
 				"          {WWI Employee ID} = PersonID,",
@@ -252,7 +266,22 @@
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> EmployeeStagingKey",
 				"applicationPeople filter(IsEmployee==true()) ~> filterEmployee",
-				"select1 sink(allowSchemaDrift: true,",
+				"sourcePaymentMethod keyGenerate(output({Payment Method Staging Key} as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> PaymentMethodStagingKey",
+				"PaymentMethodStagingKey select(mapColumn(",
+				"          {Payment Method Staging Key},",
+				"          {WWI Payment Method ID} = PaymentMethodID,",
+				"          {Payment Method} = PaymentMethodName,",
+				"          {Valid From},",
+				"          {Valid To}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
+				"select1 keyGenerate(output({City Staing Key} as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> CityStaingKey",
+				"CityStaingKey sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          {City Staging Key} as integer,",
@@ -278,9 +307,9 @@
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError',",
 				"     mapColumn(",
-				"          {City Staging Key},",
+				"          {City Staging Key} = {City Staing Key},",
 				"          {WWI City ID},",
-				"          City,",
+				"          City = {City Staing Key},",
 				"          {State Province},",
 				"          Country,",
 				"          Continent,",
@@ -323,7 +352,31 @@
 				"          Photo,",
 				"          {Valid From} = ValidFrom,",
 				"          {Valid To} = ValidTo",
-				"     )) ~> sinkToEmployeeStaging"
+				"     )) ~> sinkToEmployeeStaging",
+				"select3 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          {Payment Method Staging Key} as integer,",
+				"          {WWI Payment Method ID} as integer,",
+				"          {Payment Method} as string,",
+				"          {Valid From} as timestamp,",
+				"          {Valid To} as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          {Payment Method Staging Key},",
+				"          {WWI Payment Method ID},",
+				"          {Payment Method},",
+				"          {Valid From},",
+				"          {Valid To}",
+				"     )) ~> sinkIntegrationPaymentMethod"
 			]
 		}
 	}

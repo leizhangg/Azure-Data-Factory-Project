@@ -1,0 +1,41 @@
+{
+	"name": "IntegrationPaymentMethodStaging",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sqlDWlinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Payment Method Staging Key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "WWI Payment Method ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Payment Method",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Valid From",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "Valid To",
+				"type": "datetime2",
+				"scale": 7
+			}
+		],
+		"typeProperties": {
+			"schema": "Integration",
+			"table": "PaymentMethod_Staging"
+		}
+	}
+}
