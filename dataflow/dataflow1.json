@@ -1,0 +1,133 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DimensionCity",
+						"type": "DatasetReference"
+					},
+					"name": "DimensionCity"
+				},
+				{
+					"dataset": {
+						"referenceName": "integrationCityStaging",
+						"type": "DatasetReference"
+					},
+					"name": "integrationCity"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DimensionCity",
+						"type": "DatasetReference"
+					},
+					"name": "sinkDimensionCity"
+				}
+			],
+			"transformations": [
+				{
+					"name": "lookup1"
+				},
+				{
+					"name": "existingRow"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          {City Key} as integer,",
+				"          {WWI City ID} as integer,",
+				"          City as string,",
+				"          {State Province} as string,",
+				"          Country as string,",
+				"          Continent as string,",
+				"          {Sales Territory} as string,",
+				"          Region as string,",
+				"          Subregion as string,",
+				"          Location as binary,",
+				"          {Latest Recorded Population} as long,",
+				"          {Valid From} as timestamp,",
+				"          {Valid To} as timestamp,",
+				"          {Lineage Key} as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> DimensionCity",
+				"source(output(",
+				"          {City Staging Key} as integer,",
+				"          {WWI City ID} as integer,",
+				"          City as string,",
+				"          {State Province} as string,",
+				"          Country as string,",
+				"          Continent as string,",
+				"          {Sales Territory} as string,",
+				"          Region as string,",
+				"          Subregion as string,",
+				"          Location as binary,",
+				"          {Latest Recorded Population} as long,",
+				"          {Valid From} as timestamp,",
+				"          {Valid To} as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> integrationCity",
+				"integrationCity, select1 lookup({WWI City ID} == {sqlWWI City ID},",
+				"     multiple: true,",
+				"     broadcast: 'auto')~> lookup1",
+				"lookup1 filter(!isNull(DimensionCity@{WWI City ID})) ~> existingRow",
+				"DimensionCity select(mapColumn(",
+				"          {sqlCity Key} = {City Key},",
+				"          {sqlWWI City ID} = {WWI City ID},",
+				"          sqlCity = City,",
+				"          {sqlState Province} = {State Province},",
+				"          sqlCountry = Country,",
+				"          sqlContinent = Continent,",
+				"          {sqlSales Territory} = {Sales Territory},",
+				"          sqlRegion = Region,",
+				"          sqlSubregion = Subregion,",
+				"          sqlLocation = Location,",
+				"          {sqlLatest Recorded Population} = {Latest Recorded Population},",
+				"          {sqlValid From} = {Valid From},",
+				"          {sqlValid To} = {Valid To},",
+				"          {sqlLineage Key} = {Lineage Key}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"integrationCity sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          {City Key} as integer,",
+				"          {WWI City ID} as integer,",
+				"          City as string,",
+				"          {State Province} as string,",
+				"          Country as string,",
+				"          Continent as string,",
+				"          {Sales Territory} as string,",
+				"          Region as string,",
+				"          Subregion as string,",
+				"          Location as binary,",
+				"          {Latest Recorded Population} as long,",
+				"          {Valid From} as timestamp,",
+				"          {Valid To} as timestamp,",
+				"          {Lineage Key} as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sinkDimensionCity"
+			]
+		}
+	}
+}
