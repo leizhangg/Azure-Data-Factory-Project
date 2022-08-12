@@ -82,7 +82,7 @@
 				"integrationCity, select1 lookup({WWI City ID} == {sqlWWI City ID},",
 				"     multiple: true,",
 				"     broadcast: 'auto')~> lookup1",
-				"lookup1 filter(!isNull(DimensionCity@{WWI City ID})) ~> existingRow",
+				"lookup1 filter(!isNull({sqlWWI City ID})) ~> existingRow",
 				"DimensionCity select(mapColumn(",
 				"          {sqlCity Key} = {City Key},",
 				"          {sqlWWI City ID} = {WWI City ID},",
