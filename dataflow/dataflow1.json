@@ -26,6 +26,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "sinkDimensionCity"
+				},
+				{
+					"dataset": {
+						"referenceName": "DimensionCity",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
 				}
 			],
 			"transformations": [
@@ -37,6 +44,15 @@
 				},
 				{
 					"name": "select1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "alterRow1"
+				},
+				{
+					"name": "derivedColumn1"
 				}
 			],
 			"scriptLines": [
@@ -101,6 +117,27 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
+				"existingRow select(mapColumn(",
+				"          {sqlCity Key},",
+				"          {sqlWWI City ID},",
+				"          sqlCity,",
+				"          {sqlState Province},",
+				"          sqlCountry,",
+				"          sqlContinent,",
+				"          {sqlSales Territory},",
+				"          sqlRegion,",
+				"          sqlSubregion,",
+				"          sqlLocation,",
+				"          {sqlLatest Recorded Population},",
+				"          {sqlValid From},",
+				"          {sqlValid To},",
+				"          {sqlLineage Key}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"derivedColumn1 alterRow(updateIf(1 ==1)) ~> alterRow1",
+				"select2 derive({sqlValid From} = currentTimestamp(),",
+				"          {sqlValid To} = addMonths(currentTimestamp(), 12)) ~> derivedColumn1",
 				"integrationCity sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -126,7 +163,50 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> sinkDimensionCity"
+				"     errorHandlingOption: 'stopOnFirstError') ~> sinkDimensionCity",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          {City Key} as integer,",
+				"          {WWI City ID} as integer,",
+				"          City as string,",
+				"          {State Province} as string,",
+				"          Country as string,",
+				"          Continent as string,",
+				"          {Sales Territory} as string,",
+				"          Region as string,",
+				"          Subregion as string,",
+				"          Location as binary,",
+				"          {Latest Recorded Population} as long,",
+				"          {Valid From} as timestamp,",
+				"          {Valid To} as timestamp,",
+				"          {Lineage Key} as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['City Key'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          {City Key} = {sqlCity Key},",
+				"          {WWI City ID} = {sqlWWI City ID},",
+				"          City = sqlCity,",
+				"          {State Province} = {sqlState Province},",
+				"          Country = sqlCountry,",
+				"          Continent = sqlContinent,",
+				"          {Sales Territory} = {sqlSales Territory},",
+				"          Region = sqlRegion,",
+				"          Subregion = sqlSubregion,",
+				"          Location = sqlLocation,",
+				"          {Latest Recorded Population} = {sqlLatest Recorded Population},",
+				"          {Valid From} = {sqlValid From},",
+				"          {Valid To} = {sqlValid To},",
+				"          {Lineage Key} = {sqlLineage Key}",
+				"     )) ~> sink1"
 			]
 		}
 	}
