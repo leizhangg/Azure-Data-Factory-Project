@@ -1,5 +1,5 @@
 {
-	"name": "pipeline1",
+	"name": "02-integration-2",
 	"properties": {
 		"activities": [
 			{
@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "dataflow_integration_all",
+						"referenceName": "dataflow_integration_allDim",
 						"type": "DataFlowReference"
 					},
 					"compute": {
