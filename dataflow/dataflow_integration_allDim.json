@@ -1,5 +1,5 @@
 {
-	"name": "dataflow_integration_all",
+	"name": "dataflow_integration_allDim",
 	"properties": {
 		"description": "Integration staging: employee, paymentMethod, stockitem, supplier, trans types， city",
 		"type": "MappingDataFlow",
@@ -710,7 +710,7 @@
 				"     mapColumn(",
 				"          {City Staging Key} = {City Staing Key},",
 				"          {WWI City ID} = CityID,",
-				"          City = {City Staing Key},",
+				"          City,",
 				"          {State Province},",
 				"          Country,",
 				"          Continent,",
